@@ -20,7 +20,7 @@ class DataBaseHelper:
         )
 
     async def close_session(self):
-        if self.engine is None:
+        if self.engine is not None:
             return await self.engine.dispose()
 
     async def get_session(self):
