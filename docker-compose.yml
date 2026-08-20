@@ -1,0 +1,12 @@
+services:
+  pg:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tracker_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pwd123
+      PGDATA: /var/lib/postgresql/data
+    ports:
+      - "5454:5432"
+    volumes:
+      - ./postgresdata:/var/lib/postgresql/data
