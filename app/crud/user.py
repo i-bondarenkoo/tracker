@@ -53,3 +53,15 @@ async def update_user_crud(
     await session.commit()
     await session.refresh(update_user)
     return update_user
+
+
+async def delete_user_crud(
+    user_id: int,
+    session: AsyncSession,
+) -> None:
+    delete_user = await get_user_by_id_crud(user_id=user_id, session=session)
+    if delete_user is None:
+        return None
+    await session.delete(delete_user)
+    await session.commit()
+    return {"message": "200 Ok"}

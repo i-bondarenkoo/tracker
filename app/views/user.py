@@ -127,3 +127,17 @@ async def update_user(
             detail="Пользователь не найден",
         )
     return update_user
+
+
+@router.delete("/{user_id}")
+async def delete_user(
+    user_id: Annotated[int, Path(ge=1, description="ID пользователя для удаления")],
+    session: AsyncSession = Depends(db_helper.get_session),
+):
+    delete_user = await user.delete_user_crud(user_id=user_id, session=session)
+    if delete_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден",
+        )
+    return delete_user
