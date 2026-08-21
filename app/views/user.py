@@ -129,7 +129,7 @@ async def update_user(
     return update_user
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(
     user_id: Annotated[int, Path(ge=1, description="ID пользователя для удаления")],
     session: AsyncSession = Depends(db_helper.get_session),

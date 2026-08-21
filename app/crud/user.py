@@ -64,4 +64,4 @@ async def delete_user_crud(
         return None
     await session.delete(delete_user)
     await session.commit()
-    return {"message": "200 Ok"}
+    return {"message": "delete"}
