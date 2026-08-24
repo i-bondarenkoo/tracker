@@ -1,6 +1,3 @@
-from email.policy import HTTP
-from turtle import up
-
 from app.schemas.category import ResponseCategory, CreateCategory, UpdateCategory
 from fastapi import APIRouter, Depends, Body, HTTPException, status, Query, Path
 from app.crud import category
@@ -9,7 +6,7 @@ from typing import Annotated
 from app.db.db_helper import db_helper
 
 router = APIRouter(
-    prefix="/cagetegory",
+    prefix="/category",
     tags=["Category"],
 )
 
@@ -68,7 +65,7 @@ async def get_category_by_id(
     return current_category
 
 
-@router.patch("/{category_id}", response_model=ResponseCategory)
+@router.put("/{category_id}", response_model=ResponseCategory)
 async def update_category(
     category_id: Annotated[int, Path(ge=1, description="ID категории для обновления")],
     category_data: Annotated[UpdateCategory, Body()],
