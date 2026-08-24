@@ -53,9 +53,11 @@ async def update_category_crud(
 
 
 async def delete_category_crud(category_id: int, session: AsyncSession):
-    current_category = await get_category_by_id_crud(
+    delete_category = await get_category_by_id_crud(
         category_id=category_id, session=session
     )
-    if current_category is None:
+    if delete_category is None:
         return None
+    await session.delete(delete_category)
+    await session.commit()
     return {"message": "delete"}
