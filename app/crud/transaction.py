@@ -86,3 +86,14 @@ async def update_transaction_crud(
     await session.commit()
     await session.refresh(update_transaction)
     return update_transaction
+
+
+async def delete_transaction_crud(transaction_id: int, session: AsyncSession):
+    delete_transaction = await get_transaction_by_id_crud(
+        transaction_id=transaction_id, session=session
+    )
+    if delete_transaction is None:
+        return None
+    await session.delete(delete_transaction)
+    await session.commit()
+    return {"message": "delete"}

@@ -116,3 +116,20 @@ async def update_transaction(
             detail="Транзакция(затрата) не найдена",
         )
     return update_transaction
+
+
+@router.delete("/{transaction_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_transaction(
+    transaction_id: Annotated[int, Path(ge=1)],
+    session: AsyncSession = Depends(db_helper.get_session),
+):
+    delete_transaction = await transaction.delete_transaction_crud(
+        transaction_id=transaction_id,
+        session=session,
+    )
+    if delete_transaction is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Транзакция(затрата) не найдена",
+        )
+    return delete_transaction
