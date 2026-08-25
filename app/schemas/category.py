@@ -16,3 +16,9 @@ class ResponseCategory(BaseModel):
 
 class UpdateCategory(BaseModel):
     name: str
+
+
+class ResponseCategoryShort(BaseModel):
+    id: int
+    name: str
+    model_config = ConfigDict(from_attributes=True)

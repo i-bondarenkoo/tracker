@@ -4,6 +4,7 @@ from app.schemas.user import CreateUser, UpdateUserPatch, UpdateUserFull
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from sqlalchemy import select, Result
+from sqlalchemy.orm import selectinload, joinedload
 
 
 async def create_user_crud(user_data: CreateUser, session: AsyncSession):
@@ -65,3 +66,22 @@ async def delete_user_crud(
     await session.delete(delete_user)
     await session.commit()
     return {"message": "delete"}
+
+
+# 1-n relation
+async def get_user_with_categories_crud(
+    user_id: int,
+    session: AsyncSession,
+):
+    stmt = (
+        select(User)
+        .where(User.id == user_id)
+        .options(
+            selectinload(
+                User.categories,
+            )
+        )
+    )
+    result = await session.execute(stmt)
+    current_user = result.scalars().one_or_none()
+    return current_user

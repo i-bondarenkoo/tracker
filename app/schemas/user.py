@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
+from app.schemas.category import ResponseCategoryShort
 
 
 class CreateUser(BaseModel):
@@ -23,3 +24,12 @@ class UpdateUserPatch(BaseModel):
 
 class UpdateUserFull(CreateUser):
     pass
+
+
+class ResponseUserWithCategories(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: EmailStr
+    # created_at: datetime
+    categories: list["ResponseCategoryShort"]

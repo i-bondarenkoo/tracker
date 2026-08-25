@@ -4,7 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 from app.db.db_helper import db_helper
 from fastapi import Depends, Body, APIRouter, HTTPException, Query, status, Path
-from app.schemas.user import CreateUser, ResponseUser, UpdateUserPatch, UpdateUserFull
+from app.schemas.user import (
+    CreateUser,
+    ResponseUserWithCategories,
+    ResponseUser,
+    UpdateUserPatch,
+    UpdateUserFull,
+)
 from app.crud import user
 from sqlalchemy.exc import IntegrityError
 
@@ -57,6 +63,22 @@ async def get_user_by_id(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Пользователь не найден",
         )
+    return current_user
+
+
+@router.get("/{user_id}/category-info/", response_model=ResponseUserWithCategories)
+async def get_user_with_categories(
+    user_id: Annotated[int, Path(ge=1)],
+    session: AsyncSession = Depends(db_helper.get_session),
+):
+    current_user = await user.get_user_with_categories_crud(
+        user_id=user_id, session=session
+    )
+    if current_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
+        )
+
     return current_user
 
 
