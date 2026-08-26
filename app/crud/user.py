@@ -1,5 +1,6 @@
 from pydantic import EmailStr
 
+from app.crud.helper import build_response
 from app.schemas.user import CreateUser, UpdateUserPatch, UpdateUserFull
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
@@ -23,9 +24,28 @@ async def get_user_by_email_crud(email: EmailStr, session: AsyncSession):
     return user
 
 
-async def get_user_by_id_crud(user_id: int, session: AsyncSession):
-    current_user = await session.get(User, user_id)
-    return current_user
+async def get_user_by_id_crud(
+    user_id: int,
+    session: AsyncSession,
+    query_parametrs: str,
+):
+    params: set = {"categories", "transactions"}
+    for_query: list = []
+    if len(query_parametrs) == 0:
+        current_user = await session.get(User, user_id)
+        if current_user is None:
+            return None
+        return build_response(current_user=current_user, requested=set())
+    query_parametrs = [el.strip().lower() for el in query_parametrs.split(",")]
+    params_in = set(query_parametrs) & params
+    for_query = [selectinload(getattr(User, el)) for el in params_in]
+    stmt = select(User).where(User.id == user_id).options(*for_query)
+    result = await session.execute(stmt)
+    user: User = result.scalars().one_or_none()
+    if user is None:
+        return None
+    response = build_response(current_user=user, requested=params_in)
+    return response
 
 
 async def get_list_users_crud(session: AsyncSession, start: int = 1, stop: int = 3):
@@ -69,19 +89,19 @@ async def delete_user_crud(
 
 
 # 1-n relation
-async def get_user_with_categories_crud(
-    user_id: int,
-    session: AsyncSession,
-):
-    stmt = (
-        select(User)
-        .where(User.id == user_id)
-        .options(
-            selectinload(
-                User.categories,
-            )
-        )
-    )
-    result = await session.execute(stmt)
-    current_user = result.scalars().one_or_none()
-    return current_user
+# async def get_user_with_categories_crud(
+#     user_id: int,
+#     session: AsyncSession,
+# ):
+#     stmt = (
+#         select(User)
+#         .where(User.id == user_id)
+#         .options(
+#             selectinload(
+#                 User.categories,
+#             )
+#         )
+#     )
+#     result = await session.execute(stmt)
+#     current_user = result.scalars().one_or_none()
+#     return current_user

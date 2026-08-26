@@ -21,3 +21,11 @@ class UpdateTransaction(BaseModel):
     amount: float | None = Field(ge=1, default=None)
     description: str | None = None
     transaction_date: date | None = None
+
+
+class ResponseTransactionShort(BaseModel):
+    amount: float = Field(ge=1)
+    category_id: int = Field(ge=1)
+    description: str
+    transaction_date: date
+    model_config = ConfigDict(from_attributes=True)

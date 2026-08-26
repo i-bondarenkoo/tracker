@@ -6,7 +6,7 @@ from app.db.db_helper import db_helper
 from fastapi import Depends, Body, APIRouter, HTTPException, Query, status, Path
 from app.schemas.user import (
     CreateUser,
-    ResponseUserWithCategories,
+    ResponseUserExtended,
     ResponseUser,
     UpdateUserPatch,
     UpdateUserFull,
@@ -50,35 +50,26 @@ async def create_user(
     return new_user
 
 
-@router.get("/{user_id}", response_model=ResponseUser)
+@router.get("/{user_id}", response_model=ResponseUserExtended)
 async def get_user_by_id(
     user_id: Annotated[
         int, Path(ge=1, description="ID пользователя для получения данных")
     ],
     session: AsyncSession = Depends(db_helper.get_session),
+    query_parametrs: str = Query(
+        "", description="Параметр для подгрузки связанных с пользователем объектов"
+    ),
 ):
-    current_user = await user.get_user_by_id_crud(user_id=user_id, session=session)
+    current_user = await user.get_user_by_id_crud(
+        user_id=user_id,
+        session=session,
+        query_parametrs=query_parametrs,
+    )
     if current_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Пользователь не найден",
         )
-    return current_user
-
-
-@router.get("/{user_id}/category-info/", response_model=ResponseUserWithCategories)
-async def get_user_with_categories(
-    user_id: Annotated[int, Path(ge=1)],
-    session: AsyncSession = Depends(db_helper.get_session),
-):
-    current_user = await user.get_user_with_categories_crud(
-        user_id=user_id, session=session
-    )
-    if current_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден"
-        )
-
     return current_user
 
 

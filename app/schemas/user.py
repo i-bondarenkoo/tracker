@@ -1,6 +1,10 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from datetime import datetime
-from app.schemas.category import ResponseCategoryShort
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.schemas.category import ResponseCategoryShort
+    from app.schemas.transaction import ResponseTransactionShort
 
 
 class CreateUser(BaseModel):
@@ -26,10 +30,31 @@ class UpdateUserFull(CreateUser):
     pass
 
 
-class ResponseUserWithCategories(BaseModel):
+# class ResponseUserWithCategories(BaseModel):
+#     id: int
+#     first_name: str
+#     last_name: str
+#     email: EmailStr
+#     # created_at: datetime
+#     categories: list["ResponseCategoryShort"]
+#     model_config = ConfigDict(from_attributes=True)
+
+
+# class ResponseUserWithTransactions(BaseModel):
+#     id: int
+#     first_name: str
+#     last_name: str
+#     email: EmailStr
+#     transactions: list["ResponseTransactionShort"]
+#     model_config = ConfigDict(from_attributes=True)
+
+
+class ResponseUserExtended(BaseModel):
     id: int
     first_name: str
     last_name: str
     email: EmailStr
-    # created_at: datetime
-    categories: list["ResponseCategoryShort"]
+    categories: list["ResponseCategoryShort"] | None = None
+    transactions: list["ResponseTransactionShort"] | None = None
+
+    model_config = ConfigDict(from_attributes=True)
