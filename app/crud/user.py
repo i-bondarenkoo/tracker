@@ -27,6 +27,14 @@ async def get_user_by_email_crud(email: EmailStr, session: AsyncSession):
 async def get_user_by_id_crud(
     user_id: int,
     session: AsyncSession,
+):
+    user = await session.get(User, user_id)
+    return user
+
+
+async def get_user_by_id_extended_crud(
+    user_id: int,
+    session: AsyncSession,
     query_parametrs: str,
 ):
     params: set = {"categories", "transactions"}
@@ -35,7 +43,7 @@ async def get_user_by_id_crud(
         current_user = await session.get(User, user_id)
         if current_user is None:
             return None
-        return build_response(current_user=current_user, requested=set())
+        return build_response(current_object=current_user, requested=set())
     query_parametrs = [el.strip().lower() for el in query_parametrs.split(",")]
     params_in = set(query_parametrs) & params
     for_query = [selectinload(getattr(User, el)) for el in params_in]
@@ -44,7 +52,7 @@ async def get_user_by_id_crud(
     user: User = result.scalars().one_or_none()
     if user is None:
         return None
-    response = build_response(current_user=user, requested=params_in)
+    response = build_response(current_object=user, requested=params_in)
     return response
 
 

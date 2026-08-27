@@ -1,4 +1,9 @@
-from app.schemas.category import ResponseCategory, CreateCategory, UpdateCategory
+from app.schemas.category import (
+    ResponseCategory,
+    CreateCategory,
+    UpdateCategory,
+    ResponseCategoryExtended,
+)
 from fastapi import APIRouter, Depends, Body, HTTPException, status, Query, Path
 from app.crud import category
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -48,14 +53,19 @@ async def get_list_category(
     return categories
 
 
-@router.get("/{category_id}", response_model=ResponseCategory)
+@router.get("/{category_id}", response_model=ResponseCategoryExtended)
 async def get_category_by_id(
     category_id: Annotated[int, Path(ge=1, description="ID категории для поиска")],
     session: AsyncSession = Depends(db_helper.get_session),
+    query_parametrs: str = Query(
+        "",
+        description='Аргументы для подгрузки связи к категории. Пример ("transactions, ")',
+    ),
 ):
-    current_category = await category.get_category_by_id_crud(
+    current_category = await category.get_category_by_id_extended_crud(
         category_id=category_id,
         session=session,
+        query_parametrs=query_parametrs,
     )
     if current_category is None:
         raise HTTPException(

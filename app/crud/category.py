@@ -1,8 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from app.schemas.category import CreateCategory, UpdateCategory
 from app.models.category import Category
 from app.crud import user
 from sqlalchemy import select
+from app.crud.helper import build_response
 
 
 async def create_category_crud(category_data: CreateCategory, session: AsyncSession):
@@ -21,8 +23,31 @@ async def create_category_crud(category_data: CreateCategory, session: AsyncSess
 
 
 async def get_category_by_id_crud(category_id: int, session: AsyncSession):
-    current_category = await session.get(Category, category_id)
-    return current_category
+    category = await session.get(Category, category_id)
+    return category
+
+
+async def get_category_by_id_extended_crud(
+    category_id: int, query_parametrs: str, session: AsyncSession
+):
+    print("------", query_parametrs)
+    params = "transactions"
+    for_query = []
+    query_parametrs = query_parametrs.strip().lower()
+    print("------", query_parametrs)
+    if len(query_parametrs) == 0 or params != query_parametrs:
+        category = await session.get(Category, category_id)
+        if category is None:
+            return None
+        return build_response(current_object=category, requested=set())
+    if query_parametrs == params:
+        for_query = [selectinload(getattr(Category, query_parametrs))]
+    stmt = select(Category).where(Category.id == category_id).options(*for_query)
+    result = await session.execute(stmt)
+    category = result.scalars().one_or_none()
+    if category is None:
+        return None
+    return build_response(current_object=category, requested=set([query_parametrs]))
 
 
 async def get_list_category_crud(

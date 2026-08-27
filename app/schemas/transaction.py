@@ -29,3 +29,11 @@ class ResponseTransactionShort(BaseModel):
     description: str
     transaction_date: date
     model_config = ConfigDict(from_attributes=True)
+
+
+class ResponseTransactionShortWithUserID(BaseModel):
+    amount: float = Field(ge=1)
+    description: str
+    # user_id: int | None = Field(ge=1, default=None)
+    transaction_date: date
+    model_config = ConfigDict(from_attributes=True)

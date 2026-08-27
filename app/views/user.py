@@ -60,7 +60,7 @@ async def get_user_by_id(
         "", description="Параметр для подгрузки связанных с пользователем объектов"
     ),
 ):
-    current_user = await user.get_user_by_id_crud(
+    current_user = await user.get_user_by_id_extended_crud(
         user_id=user_id,
         session=session,
         query_parametrs=query_parametrs,
