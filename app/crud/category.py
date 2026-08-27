@@ -30,11 +30,11 @@ async def get_category_by_id_crud(category_id: int, session: AsyncSession):
 async def get_category_by_id_extended_crud(
     category_id: int, query_parametrs: str, session: AsyncSession
 ):
-    print("------", query_parametrs)
+
     params = "transactions"
     for_query = []
     query_parametrs = query_parametrs.strip().lower()
-    print("------", query_parametrs)
+
     if len(query_parametrs) == 0 or params != query_parametrs:
         category = await session.get(Category, category_id)
         if category is None:
