@@ -10,9 +10,11 @@ from app.schemas.user import (
     ResponseUser,
     UpdateUserPatch,
     UpdateUserFull,
+    ResponseUserCost,
 )
 from app.crud import user
 from sqlalchemy.exc import IntegrityError
+from datetime import date
 
 router = APIRouter(
     prefix="/users",
@@ -158,3 +160,16 @@ async def delete_user(
             detail="Пользователь не найден",
         )
     return delete_user
+
+
+@router.get("/{user_id}/spending-by-category", response_model=list[ResponseUserCost])
+async def get_spading_by_category(
+    user_id: Annotated[int, Path(ge=1)],
+    session: AsyncSession = Depends(db_helper.get_session),
+    date_from: date = Query(description="Начальная дата поиска"),
+    date_to: date = Query(description="Конечная дата поиска"),
+):
+    total_amount = await user.get_spanding_by_category_crud(
+        user_id=user_id, session=session, date_to=date_to, date_from=date_from
+    )
+    return total_amount

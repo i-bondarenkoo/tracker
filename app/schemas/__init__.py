@@ -6,6 +6,7 @@ from app.schemas.user import (
     UpdateUserFull,
     # ResponseUserWithTransactions,
     ResponseUserExtended,
+    ResponseUserCost,
 )
 from app.schemas.category import (
     CreateCategory,

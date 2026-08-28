@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 class Transaction(Base):
     __tablename__ = "transactions"
 
-    amount: Mapped[float]
+    amount: Mapped[int]
+    cost: Mapped[float]
     category_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("categories.id", ondelete="CASCADE")
     )

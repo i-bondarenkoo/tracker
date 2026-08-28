@@ -58,3 +58,10 @@ class ResponseUserExtended(BaseModel):
     transactions: list["ResponseTransactionShort"] | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ResponseUserCost(BaseModel):
+    category_id: int
+    total_amount_by_category: float
+
+    model_config = ConfigDict(from_attributes=True)

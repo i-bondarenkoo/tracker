@@ -1,6 +1,6 @@
 from app.models.category import Category
 from app.models.user import User
-from app.schemas.user import ResponseUserExtended
+from app.schemas.user import ResponseUserCost, ResponseUserExtended
 from app.schemas.category import ResponseCategoryExtended
 
 
@@ -25,3 +25,13 @@ def build_response(current_object: User | Category, requested: set[str]):
                 current_object.transactions if "transactions" in requested else None
             ),
         )
+
+
+def build_response_user_cost(
+    data_in: list,
+):
+    result = []
+    for d in data_in:
+        convert_data = ResponseUserCost(category_id=d[0], total_amount_by_category=d[1])
+        result.append(convert_data)
+    return result

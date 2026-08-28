@@ -3,7 +3,8 @@ from datetime import date, datetime
 
 
 class CreateTransaction(BaseModel):
-    amount: float = Field(ge=1)
+    amount: int = Field(ge=1)
+    cost: float = Field(ge=1)
     category_id: int = Field(ge=1)
     user_id: int = Field(ge=1)
     description: str
@@ -18,13 +19,15 @@ class ResponseTransaction(CreateTransaction):
 
 
 class UpdateTransaction(BaseModel):
-    amount: float | None = Field(ge=1, default=None)
+    amount: int | None = Field(ge=1, default=None)
+    cost: float | None = Field(ge=1, default=None)
     description: str | None = None
     transaction_date: date | None = None
 
 
 class ResponseTransactionShort(BaseModel):
-    amount: float = Field(ge=1)
+    amount: int = Field(ge=1)
+    cost: float = Field(ge=1)
     category_id: int = Field(ge=1)
     description: str
     transaction_date: date
@@ -32,7 +35,8 @@ class ResponseTransactionShort(BaseModel):
 
 
 class ResponseTransactionShortWithUserID(BaseModel):
-    amount: float = Field(ge=1)
+    amount: int = Field(ge=1)
+    cost: float = Field(ge=1)
     description: str
     # user_id: int | None = Field(ge=1, default=None)
     transaction_date: date

@@ -1,11 +1,15 @@
 from pydantic import EmailStr
 
-from app.crud.helper import build_response
+from app.crud.helper import build_response, build_response_user_cost
 from app.schemas.user import CreateUser, UpdateUserPatch, UpdateUserFull
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from sqlalchemy import select, Result
 from sqlalchemy.orm import selectinload, joinedload
+from datetime import date
+from app.exc.error import DateError
+from sqlalchemy import func
+from app.models.transaction import Transaction
 
 
 async def create_user_crud(user_data: CreateUser, session: AsyncSession):
@@ -113,3 +117,37 @@ async def delete_user_crud(
 #     result = await session.execute(stmt)
 #     current_user = result.scalars().one_or_none()
 #     return current_user
+
+
+# Посчитать сумму трат по категориям
+# за период времени для пользователя
+async def get_spanding_by_category_crud(
+    user_id: int,
+    session: AsyncSession,
+    date_from: date,
+    date_to: date,
+):
+    if date_from > date_to:
+        raise DateError
+    current_user = await get_user_by_id_crud(user_id=user_id, session=session)
+    if current_user is None:
+        return None
+    stmt = (
+        select(
+            Transaction.category_id,
+            func.sum(Transaction.amount * Transaction.cost).label(
+                "total_amount_by_category"
+            ),
+        )
+        .filter(
+            Transaction.user_id == user_id,
+            Transaction.transaction_date.between(date_from, date_to),
+        )
+        .group_by(Transaction.category_id)
+    )
+    result = await session.execute(stmt)
+    # print(result)
+    total_amount: list[tuple] = result.all()
+    # print(total_amount)
+    return build_response_user_cost(data_in=total_amount)
+    # return total_amount
