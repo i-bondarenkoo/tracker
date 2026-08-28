@@ -1,6 +1,6 @@
 from app.models.category import Category
 from app.models.user import User
-from app.schemas.user import ResponseUserCost, ResponseUserExtended
+from app.schemas.user import ResponseUserCost, ResponseUserExtended, ResponseUserTopCost
 from app.schemas.category import ResponseCategoryExtended
 
 
@@ -34,4 +34,16 @@ def build_response_user_cost(
     for d in data_in:
         convert_data = ResponseUserCost(category_id=d[0], total_amount_by_category=d[1])
         result.append(convert_data)
+    return result
+
+
+def build_response_top_user_cost(data_in: list):
+    result = []
+    for d in data_in:
+        conver_data = ResponseUserTopCost(
+            name=d[0],
+            category_id=d[1],
+            total_amount_by_category=d[2],
+        )
+        result.append(conver_data)
     return result

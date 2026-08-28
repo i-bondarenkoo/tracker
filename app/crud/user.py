@@ -1,6 +1,9 @@
 from pydantic import EmailStr
 
-from app.crud.helper import build_response, build_response_user_cost
+from app.crud.helper import (
+    build_response,
+    build_response_user_cost,
+)
 from app.schemas.user import CreateUser, UpdateUserPatch, UpdateUserFull
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
@@ -10,6 +13,7 @@ from datetime import date
 from app.exc.error import DateError
 from sqlalchemy import func
 from app.models.transaction import Transaction
+from app.models.category import Category
 
 
 async def create_user_crud(user_data: CreateUser, session: AsyncSession):
@@ -121,7 +125,7 @@ async def delete_user_crud(
 
 # Посчитать сумму трат по категориям
 # за период времени для пользователя
-async def get_spanding_by_category_crud(
+async def get_spending_by_category_crud(
     user_id: int,
     session: AsyncSession,
     date_from: date,
@@ -145,9 +149,41 @@ async def get_spanding_by_category_crud(
         )
         .group_by(Transaction.category_id)
     )
-    result = await session.execute(stmt)
-    # print(result)
+    result: Result = await session.execute(stmt)
+    print(result)
     total_amount: list[tuple] = result.all()
-    # print(total_amount)
+    print(total_amount)
     return build_response_user_cost(data_in=total_amount)
     # return total_amount
+
+
+# Топ 3 категории по тратам за период
+async def get_top_spending_by_category_crud(
+    user_id: int,
+    session: AsyncSession,
+    date_from: date,
+    date_to: date,
+    limit: int = 3,
+):
+    stmt = (
+        select(
+            Category.name,
+            Transaction.category_id,
+            func.sum(Transaction.amount * Transaction.cost).label(
+                "total_amount_by_category"
+            ),
+        )
+        .join(Category)
+        .filter(
+            Transaction.user_id == user_id,
+            # Category.id == Transaction.category_id,
+            Transaction.transaction_date.between(date_from, date_to),
+        )
+        .group_by(Transaction.category_id, Category.name)
+        .order_by(func.sum(Transaction.amount * Transaction.cost).desc())
+        .limit(limit)
+    )
+    result: Result = await session.execute(stmt)
+    total_amount = result.all()
+    print(total_amount)
+    return total_amount

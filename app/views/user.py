@@ -1,5 +1,3 @@
-from email.policy import HTTP
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 from app.db.db_helper import db_helper
@@ -11,6 +9,7 @@ from app.schemas.user import (
     UpdateUserPatch,
     UpdateUserFull,
     ResponseUserCost,
+    ResponseUserTopCost,
 )
 from app.crud import user
 from sqlalchemy.exc import IntegrityError
@@ -163,13 +162,33 @@ async def delete_user(
 
 
 @router.get("/{user_id}/spending-by-category", response_model=list[ResponseUserCost])
-async def get_spading_by_category(
+async def get_speding_by_category(
     user_id: Annotated[int, Path(ge=1)],
     session: AsyncSession = Depends(db_helper.get_session),
     date_from: date = Query(description="Начальная дата поиска"),
     date_to: date = Query(description="Конечная дата поиска"),
 ):
-    total_amount = await user.get_spanding_by_category_crud(
+    total_amount = await user.get_spending_by_category_crud(
         user_id=user_id, session=session, date_to=date_to, date_from=date_from
+    )
+    return total_amount
+
+
+@router.get(
+    "/{user_id}/spending-top-categories", response_model=list[ResponseUserTopCost]
+)
+async def get_top_spending_by_category(
+    user_id: Annotated[int, Path(ge=1)],
+    session: AsyncSession = Depends(db_helper.get_session),
+    date_from: date = Query(),
+    date_to: date = Query(),
+    limit: int = Query(3, ge=1),
+):
+    total_amount = await user.get_top_spending_by_category_crud(
+        user_id=user_id,
+        session=session,
+        date_from=date_from,
+        date_to=date_to,
+        limit=limit,
     )
     return total_amount

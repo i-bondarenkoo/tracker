@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -63,5 +63,13 @@ class ResponseUserExtended(BaseModel):
 class ResponseUserCost(BaseModel):
     category_id: int
     total_amount_by_category: float
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ResponseUserTopCost(BaseModel):
+    name: str
+    category_id: int
+    total_amount_by_category: float = Field(ge=1)
 
     model_config = ConfigDict(from_attributes=True)
