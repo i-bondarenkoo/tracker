@@ -7,6 +7,7 @@ from app.schemas.user import (
     # ResponseUserWithTransactions,
     ResponseUserExtended,
     ResponseUserCost,
+    ResponseUserAvgValue,
 )
 from app.schemas.category import (
     CreateCategory,

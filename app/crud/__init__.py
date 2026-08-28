@@ -8,6 +8,7 @@ from app.crud.user import (
     # get_user_with_categories_crud,
     get_spending_by_category_crud,
     get_top_spending_by_category_crud,
+    get_transactions_average_value_crud,
 )
 
 from app.crud.category import (

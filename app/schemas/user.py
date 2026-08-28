@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict, Field
-from datetime import datetime
+from datetime import datetime, date
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -72,4 +72,15 @@ class ResponseUserTopCost(BaseModel):
     category_id: int
     total_amount_by_category: float = Field(ge=1)
 
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ResponseUserAvgValue(BaseModel):
+    id: int
+    amount: int
+    cost: float
+    category_id: int
+    user_id: int
+    description: str
+    transaction_date: date
     model_config = ConfigDict(from_attributes=True)

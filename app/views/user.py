@@ -10,8 +10,10 @@ from app.schemas.user import (
     UpdateUserFull,
     ResponseUserCost,
     ResponseUserTopCost,
+    ResponseUserAvgValue,
 )
 from app.crud import user
+from app.exc.error import DateError
 from sqlalchemy.exc import IntegrityError
 from datetime import date
 
@@ -168,10 +170,21 @@ async def get_speding_by_category(
     date_from: date = Query(description="Начальная дата поиска"),
     date_to: date = Query(description="Конечная дата поиска"),
 ):
-    total_amount = await user.get_spending_by_category_crud(
-        user_id=user_id, session=session, date_to=date_to, date_from=date_from
-    )
-    return total_amount
+    try:
+        total = await user.get_spending_by_category_crud(
+            user_id=user_id, session=session, date_to=date_to, date_from=date_from
+        )
+    except DateError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Некорректный диапазон даты",
+        )
+    if total is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден",
+        )
+    return total
 
 
 @router.get(
@@ -184,11 +197,51 @@ async def get_top_spending_by_category(
     date_to: date = Query(),
     limit: int = Query(3, ge=1),
 ):
-    total_amount = await user.get_top_spending_by_category_crud(
-        user_id=user_id,
-        session=session,
-        date_from=date_from,
-        date_to=date_to,
-        limit=limit,
-    )
-    return total_amount
+    try:
+        total = await user.get_top_spending_by_category_crud(
+            user_id=user_id,
+            session=session,
+            date_from=date_from,
+            date_to=date_to,
+            limit=limit,
+        )
+    except DateError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Некорректный диапазон даты",
+        )
+    if total is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден",
+        )
+    return total
+
+
+@router.get(
+    "/{user_id}/transactions-average-value", response_model=list[ResponseUserAvgValue]
+)
+async def get_transactions_average_value(
+    user_id: Annotated[int, Path(ge=1)],
+    date_from: date = Query(),
+    date_to: date = Query(),
+    session: AsyncSession = Depends(db_helper.get_session),
+):
+    try:
+        total = await user.get_transactions_average_value_crud(
+            user_id=user_id,
+            session=session,
+            date_from=date_from,
+            date_to=date_to,
+        )
+    except DateError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Некорректный диапазон даты",
+        )
+    if total is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден",
+        )
+    return total

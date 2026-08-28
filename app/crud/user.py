@@ -4,6 +4,7 @@ from app.crud.helper import (
     build_response,
     build_response_user_cost,
 )
+from app.schemas import user
 from app.schemas.user import CreateUser, UpdateUserPatch, UpdateUserFull
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
@@ -165,6 +166,11 @@ async def get_top_spending_by_category_crud(
     date_to: date,
     limit: int = 3,
 ):
+    if date_from > date_to:
+        raise DateError
+    current_user = await get_user_by_id_crud(user_id=user_id, session=session)
+    if current_user is None:
+        return None
     stmt = (
         select(
             Category.name,
@@ -187,3 +193,37 @@ async def get_top_spending_by_category_crud(
     total_amount = result.all()
     print(total_amount)
     return total_amount
+
+
+# Вывести траты/транзакции пользователя с именем и фамилией
+# которые больше среднего чека этого пользователя
+# за период времени
+async def get_transactions_average_value_crud(
+    user_id: int,
+    date_from: date,
+    date_to: date,
+    session: AsyncSession,
+):
+    if date_from > date_to:
+        raise DateError
+    current_user = await get_user_by_id_crud(user_id=user_id, session=session)
+    if current_user is None:
+        return None
+    query = (
+        select(func.avg(Transaction.amount * Transaction.cost).label("avg"))
+        .filter(
+            Transaction.user_id == user_id,
+            Transaction.transaction_date.between(date_from, date_to),
+        )
+        .scalar_subquery()
+    )
+    stmt = select(Transaction).filter(
+        Transaction.user_id == user_id,
+        Transaction.transaction_date.between(date_from, date_to),
+        Transaction.amount * Transaction.cost > query,
+    )
+
+    result = await session.execute(stmt)
+    total = result.scalars().all()
+    print(total)
+    return total
