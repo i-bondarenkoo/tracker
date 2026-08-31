@@ -15,6 +15,7 @@ class User(Base):
     first_name: Mapped[str] = mapped_column(String(35))
     last_name: Mapped[str] = mapped_column(String(35))
     email: Mapped[str] = mapped_column(String(50), unique=True)
+    password_hash: Mapped[bytes]
     created_at: Mapped[datetime] = mapped_column(
         # на стороне бд
         server_default=func.now(),

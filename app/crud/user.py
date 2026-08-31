@@ -15,11 +15,17 @@ from app.exc.error import DateError
 from sqlalchemy import func
 from app.models.transaction import Transaction
 from app.models.category import Category
+from app.auth.service import hash_password
 
 
 async def create_user_crud(user_data: CreateUser, session: AsyncSession):
 
-    new_user = User(**user_data.model_dump())
+    new_user = User(
+        email=user_data.email,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        password_hash=hash_password(password=user_data.password),
+    )
     session.add(new_user)
     await session.commit()
     await session.refresh(new_user)
@@ -195,7 +201,7 @@ async def get_top_spending_by_category_crud(
     return total_amount
 
 
-# Вывести траты/транзакции пользователя с именем и фамилией
+# Вывести траты/транзакции пользователя
 # которые больше среднего чека этого пользователя
 # за период времени
 async def get_transactions_average_value_crud(

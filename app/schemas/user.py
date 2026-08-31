@@ -11,10 +11,14 @@ class CreateUser(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
+    password: str
 
 
-class ResponseUser(CreateUser):
+class ResponseUser(BaseModel):
     id: int
+    first_name: str
+    last_name: str
+    email: EmailStr
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
