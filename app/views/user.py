@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
+from app.models.user import User
 from app.db.db_helper import db_helper
 from fastapi import Depends, Body, APIRouter, HTTPException, Query, status, Path
 from app.schemas.user import (
@@ -16,15 +17,17 @@ from app.crud import user
 from app.exc.error import DateError
 from sqlalchemy.exc import IntegrityError
 from datetime import date
+from app.auth.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
+    dependencies=[Depends(get_current_user)],
 )
 
 
 @router.post(
-    "/",
+    "/register",
     response_model=ResponseUser,
     status_code=status.HTTP_201_CREATED,
 )

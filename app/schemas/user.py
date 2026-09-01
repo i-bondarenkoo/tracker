@@ -7,6 +7,11 @@ if TYPE_CHECKING:
     from app.schemas.transaction import ResponseTransactionShort
 
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class CreateUser(BaseModel):
     email: EmailStr
     first_name: str

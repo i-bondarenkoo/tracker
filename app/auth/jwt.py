@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import jwt
 from app.core.config import settings
@@ -11,7 +11,7 @@ def encode_jwt(
     expire_minutes: int = settings.jwt_auth.access_token_expire_minutes,
 ) -> bytes:
     to_encode: dict = payload.copy()
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     expire = now + timedelta(minutes=expire_minutes)
     to_encode.update(
         # время создания токена
@@ -28,9 +28,9 @@ def decode_jwt(
     key: str = settings.jwt_auth.key,
     algorithm: str = settings.jwt_auth.algorithm,
 ) -> str:
-    decode_token = jwt.decode(
+    decoded_token = jwt.decode(
         jwt=token,
         key=key,
         algorithms=[algorithm],
     )
-    return decode_token
+    return decoded_token
