@@ -35,8 +35,10 @@ class UpdateUserPatch(BaseModel):
     email: EmailStr | None = None
 
 
-class UpdateUserFull(CreateUser):
-    pass
+class UpdateUserFull(BaseModel):
+    email: EmailStr
+    first_name: str
+    last_name: str
 
 
 # class ResponseUserWithCategories(BaseModel):
