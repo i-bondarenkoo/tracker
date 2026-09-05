@@ -1,7 +1,3 @@
-class UserSearchError(Exception):
-    pass
-
-
 class CategorySearchError(Exception):
     pass
 
@@ -11,4 +7,16 @@ class DateError(Exception):
 
 
 class TransactionCreateError(Exception):
+    pass
+
+
+class GetTransactionError(Exception):
+    pass
+
+
+class GetCategoryForbidden(Exception):
+    pass
+
+
+class GetSharedCategoryForbidden(Exception):
     pass

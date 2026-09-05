@@ -4,18 +4,17 @@ from app.schemas.category import CreateCategory, UpdateCategory
 from app.models.category import Category
 from app.crud import user
 from sqlalchemy import select
-from app.crud.helper import build_response
+from app.crud.helper import build_response_category
+from app.models.user import User
+from app.exc.error import GetCategoryForbidden, GetSharedCategoryForbidden
+from app.models.transaction import Transaction
 
 
-async def create_category_crud(category_data: CreateCategory, session: AsyncSession):
-    if category_data.user_id is not None:
-        current_user = await user.get_user_by_id_crud(
-            user_id=category_data.user_id, session=session
-        )
-        if current_user is None:
-            return None
-
-    new_category = Category(**category_data.model_dump())
+async def create_category_crud(
+    user_db: User, category_data: CreateCategory, session: AsyncSession
+):
+    user_id = None if category_data.is_shared else user_db.id
+    new_category = Category(name=category_data.name, user_id=user_id)
     session.add(new_category)
     await session.commit()
     await session.refresh(new_category)
@@ -28,26 +27,32 @@ async def get_category_by_id_crud(category_id: int, session: AsyncSession):
 
 
 async def get_category_by_id_extended_crud(
-    category_id: int, query_parametrs: str, session: AsyncSession
+    category_id: int, query_parametrs: str, session: AsyncSession, user_db: User
 ):
 
     params = "transactions"
-    for_query = []
     query_parametrs = query_parametrs.strip().lower()
 
-    if len(query_parametrs) == 0 or params != query_parametrs:
-        category = await session.get(Category, category_id)
-        if category is None:
-            return None
-        return build_response(current_object=category, requested=set())
-    if query_parametrs == params:
-        for_query = [selectinload(getattr(Category, query_parametrs))]
-    stmt = select(Category).where(Category.id == category_id).options(*for_query)
-    result = await session.execute(stmt)
-    category = result.scalars().one_or_none()
-    if category is None:
+    current_category = await session.get(Category, category_id)
+    if current_category is None:
         return None
-    return build_response(current_object=category, requested=set([query_parametrs]))
+    if current_category.user_id != user_db.id and current_category.user_id is not None:
+        raise GetCategoryForbidden
+    if query_parametrs == params:
+        stmt = (
+            select(Transaction)
+            .filter(
+                Transaction.user_id == user_db.id,
+                Transaction.category_id == category_id,
+            )
+            .order_by(Transaction.id)
+        )
+        result = await session.execute(stmt)
+        transactions = result.scalars().all()
+        return build_response_category(
+            current_object=current_category, transactions_override=transactions
+        )
+    return build_response_category(current_object=current_category)
 
 
 async def get_list_category_crud(
@@ -62,13 +67,20 @@ async def get_list_category_crud(
 
 
 async def update_category_crud(
-    category_id: int, category_data: UpdateCategory, session: AsyncSession
+    category_id: int,
+    category_data: UpdateCategory,
+    session: AsyncSession,
+    user_db: User,
 ):
     current_category = await get_category_by_id_crud(
         category_id=category_id, session=session
     )
     if current_category is None:
         return None
+    if current_category.user_id is None:
+        raise GetSharedCategoryForbidden
+    if current_category.user_id != user_db.id:
+        raise GetCategoryForbidden
     update_category = category_data.model_dump()
     for k, v in update_category.items():
         setattr(current_category, k, v)
@@ -77,12 +89,16 @@ async def update_category_crud(
     return current_category
 
 
-async def delete_category_crud(category_id: int, session: AsyncSession):
+async def delete_category_crud(user_db: User, category_id: int, session: AsyncSession):
     delete_category = await get_category_by_id_crud(
         category_id=category_id, session=session
     )
     if delete_category is None:
         return None
+    if delete_category.user_id is None:
+        raise GetSharedCategoryForbidden
+    if delete_category.user_id != user_db.id:
+        raise GetCategoryForbidden
     await session.delete(delete_category)
     await session.commit()
     return {"message": "delete"}

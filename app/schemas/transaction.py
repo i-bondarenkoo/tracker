@@ -6,15 +6,20 @@ class CreateTransaction(BaseModel):
     amount: int = Field(ge=1)
     cost: float = Field(ge=1)
     category_id: int = Field(ge=1)
-    user_id: int = Field(ge=1)
+    # user_id: int = Field(ge=1)
     description: str
     transaction_date: date
 
 
-class ResponseTransaction(CreateTransaction):
+class ResponseTransaction(BaseModel):
     id: int
     created_at: datetime
-
+    amount: int = Field(ge=1)
+    category_id: int = Field(ge=1)
+    cost: float = Field(ge=1)
+    user_id: int = Field(ge=1)
+    description: str
+    transaction_date: date
     model_config = ConfigDict(from_attributes=True)
 
 

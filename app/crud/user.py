@@ -1,7 +1,7 @@
 from pydantic import EmailStr
 
 from app.crud.helper import (
-    build_response,
+    build_response_user,
     build_response_user_cost,
 )
 from app.schemas import user
@@ -48,26 +48,24 @@ async def get_user_by_id_crud(
 
 
 async def get_user_by_id_extended_crud(
-    user_id: int,
+    user_db: User,
     session: AsyncSession,
     query_parametrs: str,
 ):
     params: set = {"categories", "transactions"}
     for_query: list = []
     if len(query_parametrs) == 0:
-        current_user = await session.get(User, user_id)
-        if current_user is None:
-            return None
-        return build_response(current_object=current_user, requested=set())
+        return build_response_user(current_object=user_db, requested=set())
+
     query_parametrs = [el.strip().lower() for el in query_parametrs.split(",")]
     params_in = set(query_parametrs) & params
     for_query = [selectinload(getattr(User, el)) for el in params_in]
-    stmt = select(User).where(User.id == user_id).options(*for_query)
+    stmt = select(User).where(User.id == user_db.id).options(*for_query)
     result = await session.execute(stmt)
-    user: User = result.scalars().one_or_none()
-    if user is None:
-        return None
-    response = build_response(current_object=user, requested=params_in)
+    user_with_relations: User = result.scalars().one_or_none()
+    response = build_response_user(
+        current_object=user_with_relations, requested=params_in
+    )
     return response
 
 
@@ -79,34 +77,29 @@ async def get_list_users_crud(session: AsyncSession, start: int = 1, stop: int =
 
 
 async def update_user_crud(
-    user_id: int,
+    user_db: User,
     user_data: UpdateUserPatch | UpdateUserFull,
     session: AsyncSession,
     partial: bool,
 ):
-    update_user = await get_user_by_id_crud(user_id=user_id, session=session)
-    if update_user is None:
-        return None
+
     # exclude_unset - добавляем в словарь только те поля, которые передали
     update_data: dict = user_data.model_dump(exclude_unset=partial)
     if len(update_data) == 0:
-        return update_user
+        return user_db
     for k, v in update_data.items():
         # if v is not None:
-        setattr(update_user, k, v)
+        setattr(user_db, k, v)
     await session.commit()
-    await session.refresh(update_user)
-    return update_user
+    await session.refresh(user_db)
+    return user_db
 
 
 async def delete_user_crud(
-    user_id: int,
+    user_db: User,
     session: AsyncSession,
 ) -> None:
-    delete_user = await get_user_by_id_crud(user_id=user_id, session=session)
-    if delete_user is None:
-        return None
-    await session.delete(delete_user)
+    await session.delete(user_db)
     await session.commit()
     return {"message": "delete"}
 
@@ -133,16 +126,13 @@ async def delete_user_crud(
 # Посчитать сумму трат по категориям
 # за период времени для пользователя
 async def get_spending_by_category_crud(
-    user_id: int,
+    user_db: User,
     session: AsyncSession,
     date_from: date,
     date_to: date,
 ):
     if date_from > date_to:
         raise DateError
-    current_user = await get_user_by_id_crud(user_id=user_id, session=session)
-    if current_user is None:
-        return None
     stmt = (
         select(
             Transaction.category_id,
@@ -151,7 +141,7 @@ async def get_spending_by_category_crud(
             ),
         )
         .filter(
-            Transaction.user_id == user_id,
+            Transaction.user_id == user_db.id,
             Transaction.transaction_date.between(date_from, date_to),
         )
         .group_by(Transaction.category_id)
@@ -166,7 +156,7 @@ async def get_spending_by_category_crud(
 
 # Топ 3 категории по тратам за период
 async def get_top_spending_by_category_crud(
-    user_id: int,
+    user_db: User,
     session: AsyncSession,
     date_from: date,
     date_to: date,
@@ -174,9 +164,6 @@ async def get_top_spending_by_category_crud(
 ):
     if date_from > date_to:
         raise DateError
-    current_user = await get_user_by_id_crud(user_id=user_id, session=session)
-    if current_user is None:
-        return None
     stmt = (
         select(
             Category.name,
@@ -187,7 +174,7 @@ async def get_top_spending_by_category_crud(
         )
         .join(Category)
         .filter(
-            Transaction.user_id == user_id,
+            Transaction.user_id == user_db.id,
             # Category.id == Transaction.category_id,
             Transaction.transaction_date.between(date_from, date_to),
         )
@@ -205,26 +192,24 @@ async def get_top_spending_by_category_crud(
 # которые больше среднего чека этого пользователя
 # за период времени
 async def get_transactions_average_value_crud(
-    user_id: int,
+    user_db: User,
     date_from: date,
     date_to: date,
     session: AsyncSession,
 ):
     if date_from > date_to:
         raise DateError
-    current_user = await get_user_by_id_crud(user_id=user_id, session=session)
-    if current_user is None:
-        return None
+
     query = (
         select(func.avg(Transaction.amount * Transaction.cost).label("avg"))
         .filter(
-            Transaction.user_id == user_id,
+            Transaction.user_id == user_db.id,
             Transaction.transaction_date.between(date_from, date_to),
         )
         .scalar_subquery()
     )
     stmt = select(Transaction).filter(
-        Transaction.user_id == user_id,
+        Transaction.user_id == user_db.id,
         Transaction.transaction_date.between(date_from, date_to),
         Transaction.amount * Transaction.cost > query,
     )

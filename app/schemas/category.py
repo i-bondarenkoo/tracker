@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 class CreateCategory(BaseModel):
     name: str
-    user_id: int | None = Field(default=None, ge=1)
+    is_shared: bool = False
 
 
 class ResponseCategory(BaseModel):

@@ -1,1 +1,7 @@
-from app.exc.error import UserSearchError, CategorySearchError, DateError
+from app.exc.error import (
+    CategorySearchError,
+    DateError,
+    GetCategoryForbidden,
+    GetSharedCategoryForbidden,
+    GetTransactionError,
+)

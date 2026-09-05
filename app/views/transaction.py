@@ -9,11 +9,13 @@ from app.schemas.transaction import (
 from typing import Annotated
 from app.crud import transaction
 from app.exc.error import (
-    UserSearchError,
     CategorySearchError,
     DateError,
     TransactionCreateError,
+    GetTransactionError,
 )
+from app.auth.dependencies import get_current_user
+from app.models.user import User
 
 router = APIRouter(
     prefix="/transaction",
@@ -27,16 +29,13 @@ router = APIRouter(
 async def create_transaction(
     transaction_data: Annotated[CreateTransaction, Body()],
     session: AsyncSession = Depends(db_helper.get_session),
+    user_db: User = Depends(get_current_user),
 ):
     try:
         new_transaction = await transaction.create_transaction_crud(
-            transaction_data=transaction_data, session=session
-        )
-    except UserSearchError:
-
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Пользователь не найден",
+            transaction_data=transaction_data,
+            session=session,
+            user_db=user_db,
         )
     except CategorySearchError:
 
@@ -62,21 +61,30 @@ async def create_transaction(
 async def get_transaction_by_id(
     transaction_id: Annotated[int, Path(ge=1)],
     session: AsyncSession = Depends(db_helper.get_session),
+    user_db: User = Depends(get_current_user),
 ):
-    current_transaction = await transaction.get_transaction_by_id_crud(
-        transaction_id=transaction_id,
-        session=session,
-    )
+    try:
+        current_transaction = await transaction.get_transaction_by_id_crud(
+            transaction_id=transaction_id,
+            session=session,
+            user_db=user_db,
+        )
+    except GetTransactionError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Нельзя посмотреть данные чужой транзакции",
+        )
     if current_transaction is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Транзакция(затрата) не найдена",
+            detail="Транзакции(затрата) не найдены",
         )
     return current_transaction
 
 
 @router.get("/", response_model=list[ResponseTransaction])
 async def get_list_transactions(
+    user_db: User = Depends(get_current_user),
     start: int = Query(0, ge=0),
     stop: int = Query(3, gt=1),
     session: AsyncSession = Depends(db_helper.get_session),
@@ -88,6 +96,7 @@ async def get_list_transactions(
         )
     transactions: list = await transaction.get_list_transactions_crud(
         start=start,
+        user_db=user_db,
         stop=stop,
         session=session,
     )
@@ -99,16 +108,23 @@ async def update_transaction(
     transaction_id: Annotated[int, Path(ge=1)],
     transaction_data: Annotated[UpdateTransaction, Body()],
     session: AsyncSession = Depends(db_helper.get_session),
+    user_db: User = Depends(get_current_user),
 ):
     try:
         update_transaction = await transaction.update_transaction_crud(
             transaction_id=transaction_id,
             session=session,
+            user_db=user_db,
             transaction_data=transaction_data,
         )
     except DateError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Указана не корректная дата"
+        )
+    except GetTransactionError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Нельзя обновить данные чужой транзакции",
         )
     if update_transaction is None:
         raise HTTPException(
@@ -122,11 +138,19 @@ async def update_transaction(
 async def delete_transaction(
     transaction_id: Annotated[int, Path(ge=1)],
     session: AsyncSession = Depends(db_helper.get_session),
+    user_db: User = Depends(get_current_user),
 ):
-    delete_transaction = await transaction.delete_transaction_crud(
-        transaction_id=transaction_id,
-        session=session,
-    )
+    try:
+        delete_transaction = await transaction.delete_transaction_crud(
+            transaction_id=transaction_id,
+            session=session,
+            user_db=user_db,
+        )
+    except GetTransactionError:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Нельзя удалить данные чужой транзакции",
+        )
     if delete_transaction is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
