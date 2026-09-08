@@ -1,0 +1,180 @@
+.body-header {
+  
+    /* элементы в ряд */
+    display: flex; 
+    /* растянуть по краям */
+    justify-content: space-between;
+    /* выровнить по вертикали */
+    align-items:  center;
+    padding: 20px;
+    background: #8cceb5;
+    border-radius: 25px;
+    width: 85%;
+    margin: auto;
+    margin-top: 25px;
+
+}
+.h1-header {
+    margin: auto;
+}
+.btn-enter {
+    padding: 7px;
+    margin-right: 10px;
+    border-radius: 15px;
+}
+.btn-register {
+    padding: 7px;
+    border-radius: 15px;
+}
+.btn-header {
+    margin-right: 15px;
+}
+.body-main {
+    background-color: #8cceb5;
+    border-radius: 25px;
+    width: 85%;
+    margin: auto;
+    padding: 20px;
+    margin-top: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.day-card {
+    background: #79b89f;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    min-width: 240px;
+    max-width: 300px;
+    padding: 15px;
+    border-radius: 25px;
+    box-sizing: border-box;
+}
+.card-inside h3 {
+    text-align: center;
+    color: #2c2c2c;
+    margin: 0 0 12px 0;
+}
+.expense-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.expense-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border-radius: 15px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.expense-row:last-child {
+    margin-bottom: 0;
+}
+
+.expense-row span:first-child {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    color: #2c2c2c;
+}
+
+.expense-row span:last-child {
+    white-space: nowrap;
+    font-weight: bold;
+    color: #4a4a4a;
+}
+.controls-panel {
+    width: 85%;
+    margin: 25px auto 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.add-transaction-btn {
+    padding: 12px 20px;
+    border-radius: 15px;
+    background: #8cceb5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.date-filter {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.login-modal, .register-modal , .transaction-modal{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.login-modal-content, .register-modal-content , .transaction-modal-content{
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 320px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.login-modal-content h3, .register-modal-content h3 , .transaction-modal-content h3{
+    margin: 0 0 10px 0;
+    text-align: center;
+    color: #2c2c2c;
+}
+
+.login-modal-content input, .register-modal-content input {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.login-modal-content input:focus, .register-modal-content input:focus {
+    border-color: #8cceb5;
+}
+
+.submit-btn {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #8cceb5;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.submit-btn:hover {
+    background: #79b89f;
+}
+
+.close-btn {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 13px;
+}

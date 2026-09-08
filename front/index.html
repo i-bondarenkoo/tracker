@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="body-header">
+        <h1 class="h1-header">Панель управления расходами</h1>
+        <div class="btn-header">
+            <button class="btn-enter">Войти</button>
+            <button class="btn-register">Регистрация</button>
+        </div>
+    </div>
+    <div class="login-modal" id="loginModal">
+        <div class="login-modal-content">
+            <h3>Вход</h3>
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Пароль">
+            <button class="submit-btn" id="loginSubmit">Войти</button>
+            <button class="close-btn" id="loginClose">Закрыть</button>
+        </div>
+    </div>
+    <div class="register-modal" id="registerModal">
+        <div class="register-modal-content">
+            <h3>Регистрация</h3>
+            <input type="text"  id="register-first_name" placeholder="Имя">
+            <input type="text"  id="register-last_name" placeholder="Фамилия">
+            <input type="email"  id="register-email" placeholder="Почта">
+            <input type="password" id="register-password" placeholder="Пароль">
+            <button class="submit-btn" id="registerSubmit">Зарегистрироваться</button>
+            <button class="close-btn" id="registerClose">Закрыть</button>
+        </div>
+    </div>
+  
+    <div class="controls-panel">
+        <button class="add-transaction-btn">+ Добавить трату</button>
+        <input type="date" class="date-filter">
+    </div>
+    <div class="transaction-modal" id="transactionModal">
+        <div class="transaction-modal-content">
+            <h3>Новая трата</h3>
+            <input type="number" id="transaction-amount" placeholder="Количество">
+            <input type="number" id="transaction-cost" placeholder="Цена">
+            <input type="number" id="transaction-category-id" placeholder="ID категории">
+            <input type="text" id="transaction-description" placeholder="Описание">
+            <input type="date" id="transaction-transaction-date" placeholder="Дата затраты">
+            <button class="submit-btn" id="transactionSubmit">Добавить</button>
+            <button class="close-btn" id="transactionClose">Закрыть</button>
+        </div>
+    </div>
+    <div class="body-main" id="transactionsContainer">
+    <!-- <div class="day-card">
+        <div class="card-inside">
+            <h3>5 сентября</h3>
+            <div class="expense-row">
+                <span>Еда</span>
+                <span>450 ₽</span>
+                <div class="expense-actions">
+                    <button class="icon-btn">✎</button>
+                    <button class="icon-btn">✕</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    
+</div>
+
+    <link rel="stylesheet" href="/front/index.css">
+    <script src="/front/api.js"></script>
+    <script src="/front/auth.js"></script>
+    <script src="/front/script.js"></script>
+</body>
+</html>
