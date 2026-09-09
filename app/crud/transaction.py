@@ -69,11 +69,20 @@ async def get_list_transactions_crud(
     session: AsyncSession,
     start: int = 0,
     stop: int = 3,
+    date_from: date | None = None,
+    date_to: date | None = None,
 ):
+    filters: list = [Transaction.user_id == user_db.id]
+    if date_from is not None and date_to is not None:
+        filters.append(Transaction.transaction_date.between(date_from, date_to))
+    elif date_from is not None:
+        filters.append(Transaction.transaction_date >= date_from)
+    elif date_to is not None:
+        filters.append(Transaction.transaction_date <= date_to)
     stmt = (
         select(Transaction)
-        .filter(Transaction.user_id == user_db.id)
-        .order_by(Transaction.id)
+        .filter(*filters)
+        .order_by(Transaction.transaction_date.asc())
         .limit(stop - start)
         .offset(start)
     )

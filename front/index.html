@@ -36,14 +36,35 @@
   
     <div class="controls-panel">
         <button class="add-transaction-btn">+ Добавить трату</button>
-        <input type="date" class="date-filter">
+        <button class="add-category-btn">+ Добавить категорию</button>
+        <button class="filter-date-btn">Фильтр по дате</button>
+    <div class="date-range-filter-modal" id="filter-rangeModal">
+        <div class="filter-range-content">
+            <h3>Выбери промежуток дат</h3>
+            <input type="date" id="date-from">
+            <input type="date" id="date-to">
+            <button class="submit-btn" id="filterSubmit">Отфильтровать</button>
+            <button class="close-btn"id="filterClose">Отмена</button>
+        </div>
+    </div>
+    <div class="category-modal" id="categoryModal">
+        <div class="category-modal-content">
+            <h3>Новая категория</h3>
+            <input type="text" id="category-name" placeholder="Название">
+            <button class="submit-btn" id="categorySubmit">Добавить</button>
+            <button class="close-btn" id="categoryClose">Закрыть</button>
+        </div>
+    </div>
+    
     </div>
     <div class="transaction-modal" id="transactionModal">
         <div class="transaction-modal-content">
             <h3>Новая трата</h3>
             <input type="number" id="transaction-amount" placeholder="Количество">
             <input type="number" id="transaction-cost" placeholder="Цена">
-            <input type="number" id="transaction-category-id" placeholder="ID категории">
+            <select id="transaction-category-id">
+                <option value="">Выберите категорию</option>
+            </select>
             <input type="text" id="transaction-description" placeholder="Описание">
             <input type="date" id="transaction-transaction-date" placeholder="Дата затраты">
             <button class="submit-btn" id="transactionSubmit">Добавить</button>

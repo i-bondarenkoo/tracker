@@ -8,6 +8,7 @@ from app.crud.helper import build_response_category
 from app.models.user import User
 from app.exc.error import GetCategoryForbidden, GetSharedCategoryForbidden
 from app.models.transaction import Transaction
+from sqlalchemy import or_
 
 
 async def create_category_crud(
@@ -57,10 +58,17 @@ async def get_category_by_id_extended_crud(
 
 async def get_list_category_crud(
     session: AsyncSession,
+    user_db: User,
     start: int = 0,
     stop: int = 3,
 ):
-    stmt = select(Category).order_by(Category.id).limit(stop - start).offset(start)
+    stmt = (
+        select(Category)
+        .filter(or_(Category.user_id == user_db.id, Category.user_id.is_(None)))
+        .order_by(Category.id)
+        .limit(stop - start)
+        .offset(start)
+    )
     result = await session.execute(stmt)
     categories: list = result.scalars().all()
     return categories

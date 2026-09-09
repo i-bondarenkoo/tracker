@@ -17,8 +17,21 @@ document.getElementById('registerClose').addEventListener('click', ()=> {
 document.addEventListener('DOMContentLoaded', () => {
     loadAndRenderTransactions();
 });
+document.querySelector('.filter-date-btn').addEventListener('click', () => {
+    document.getElementById('filter-rangeModal').style.display = 'flex';
+});
+document.getElementById('filterClose').addEventListener('click', ()=> {
+    document.getElementById('filter-rangeModal').style.display = 'none';
+});
 
-document.querySelector('.add-transaction-btn').addEventListener('click', ()=>{
+document.querySelector('.add-category-btn').addEventListener('click', () => {
+    document.getElementById('categoryModal').style.display = 'flex';
+});
+document.getElementById('categoryClose').addEventListener('click', ()=> {
+    document.getElementById('categoryModal').style.display = 'none';
+});
+document.querySelector('.add-transaction-btn').addEventListener('click', async () => {
+    await loadCategoriesIntoSelect();
     document.getElementById('transactionModal').style.display = 'flex';
 });
 document.getElementById('transactionClose').addEventListener('click', ()=> {
@@ -52,6 +65,58 @@ document.getElementById('transactionSubmit').addEventListener('click', async () 
 
     document.getElementById('transactionModal').style.display = 'none';
     loadAndRenderTransactions();
+});
+
+document.getElementById('filterSubmit').addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    const dateFrom = document.getElementById('date-from').value;
+    const dateTo = document.getElementById('date-to').value;
+
+    let url = `${API_URL}/transaction/?start=0&stop=1000`;
+    if (dateFrom) url += `&date_from=${dateFrom}`;
+    if (dateTo) url += `&date_to=${dateTo}`;
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.detail || 'Ошибка при фильтрации');
+        return;
+    }
+    const transactions = await response.json();
+    document.getElementById('filter-rangeModal').style.display = 'none';
+    renderTransactions(transactions);
+});
+
+
+document.getElementById('categorySubmit').addEventListener('click', async () => {
+    const token = localStorage.getItem('token');
+    const categoryData = {
+        name: document.getElementById('category-name').value,
+
+    };
+
+    const response = await fetch(`${API_URL}/category/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(categoryData),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.detail || 'Ошибка при создании категории');
+        return;
+    }
+
+    document.getElementById('categoryModal').style.display = 'none';
+    alert('Категория создана');
+
 });
 
 async function loadAndRenderTransactions() {

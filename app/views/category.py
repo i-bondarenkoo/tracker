@@ -50,6 +50,7 @@ async def get_list_category(
     categories = await category.get_list_category_crud(
         start=start,
         stop=stop,
+        user_db=user_db,
         session=session,
     )
     return categories

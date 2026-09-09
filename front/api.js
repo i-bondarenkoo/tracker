@@ -37,3 +37,20 @@ async function getTransactions(token) {
     }
     return await response.json()
 }
+async function loadCategoriesIntoSelect() {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/category/?start=0&stop=100`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const categories = await response.json();
+
+    const select = document.getElementById('transaction-category-id');
+    select.innerHTML = '<option value="">Выберите категорию</option>';
+
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        select.appendChild(option);
+    });
+}

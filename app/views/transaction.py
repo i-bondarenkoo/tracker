@@ -14,6 +14,7 @@ from app.exc.error import (
     TransactionCreateError,
     GetTransactionError,
 )
+from datetime import date
 from app.auth.dependencies import get_current_user
 from app.models.user import User
 
@@ -88,6 +89,8 @@ async def get_list_transactions(
     start: int = Query(0, ge=0),
     stop: int = Query(3, gt=1),
     session: AsyncSession = Depends(db_helper.get_session),
+    date_from: date = Query(default=None),
+    date_to: date = Query(default=None),
 ):
     if start > stop:
         raise HTTPException(
@@ -97,6 +100,8 @@ async def get_list_transactions(
     transactions: list = await transaction.get_list_transactions_crud(
         start=start,
         user_db=user_db,
+        date_from=date_from,
+        date_to=date_to,
         stop=stop,
         session=session,
     )

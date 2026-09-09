@@ -103,16 +103,53 @@
     color: white;
     border: none;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
 }
-
-.date-filter {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
+.add-category-btn {
+    padding: 12px 20px;
+    border-radius: 15px;
+    background: #8cceb5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
 }
-
-.login-modal, .register-modal , .transaction-modal{
+.filter-date-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 15px;
+    background: #8cceb5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+.filter-date-btn-in-form {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 15px;
+    background: #8cceb5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    width: 50%;
+    align-self: center;
+}
+.filter-date-btn-in-form-cancel{
+    padding: 12px 20px;
+    border: none;
+    border-radius: 15px;
+    background: #8cceb5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    width: 50%;
+    align-self: center;
+    background: #f0f0f0;
+}
+.login-modal, .register-modal , .transaction-modal, .date-range-filter-modal, .category-modal{
     display: none;
     position: fixed;
     top: 0;
@@ -125,45 +162,53 @@
     z-index: 100;
 }
 
-.login-modal-content, .register-modal-content , .transaction-modal-content{
+.login-modal-content, .register-modal-content, .transaction-modal-content,
+.category-modal-content, .filter-range-content {
     background: white;
     padding: 35px;
-    border-radius: 20px;
+    border-radius: 28px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 320px;
+    gap: 14px;
+    width: 380px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.login-modal-content h3, .register-modal-content h3 , .transaction-modal-content h3{
-    margin: 0 0 10px 0;
+.login-modal-content h3, .register-modal-content h3, .transaction-modal-content h3,
+.category-modal-content h3, .filter-modal-content h3 ,.filter-range-content h3{
+    margin: 0 0 8px 0;
     text-align: center;
     color: #2c2c2c;
 }
 
-.login-modal-content input, .register-modal-content input {
-    padding: 12px;
-    border-radius: 10px;
+.login-modal-content input, .register-modal-content input, .transaction-modal-content input,
+.category-modal-content input, .filter-modal-content input,
+.transaction-modal-content select ,.filter-range-content input{
+    padding: 13px;
+    border-radius: 14px;
     border: 1px solid #ddd;
     font-size: 14px;
     outline: none;
     transition: border-color 0.2s;
 }
 
-.login-modal-content input:focus, .register-modal-content input:focus {
+.login-modal-content input:focus, .register-modal-content input:focus,
+.transaction-modal-content input:focus, .category-modal-content input:focus,
+.filter-modal-content input:focus .filter-range-content input:focus{
     border-color: #8cceb5;
 }
 
 .submit-btn {
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 15px;
     border: none;
     background: #8cceb5;
     color: white;
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
+    align-self: center;
+    width: 50%;
 }
 
 .submit-btn:hover {
@@ -172,9 +217,11 @@
 
 .close-btn {
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 15px;
     border: none;
     background: #f0f0f0;
     cursor: pointer;
     font-size: 13px;
+    align-self: center;
+    width: 50%;
 }
