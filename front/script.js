@@ -142,31 +142,50 @@ function renderTransactions(transactions) {
         const card = document.createElement('div');
         card.className = 'day-card';
 
+        let dayTotal = 0;
         let rowsHtml = '';
+
         for (const t of grouped[date]) {
+            const rowSum = t.amount * t.cost;
+            dayTotal += rowSum;
+
             rowsHtml += `
-                <div class="expense-row">
-                    <span>${t.description}</span>
-                    <div class="expense-right">
-                        <span>${t.cost} ₽</span>
-                        <div class="expense-actions">
-                            <button class="icon-btn" onclick="editTransaction(${t.id})">✎</button>
-                            <button class="icon-btn" onclick="deleteTransactionHandler(${t.id})">✕</button>
-                        </div>
-                    </div>
-                </div>
-`;
+                <tr>
+                    <td>${t.description}</td>
+                    <td>${t.amount}</td>
+                    <td>${t.cost} ₽</td>
+                    <td>${rowSum} ₽</td>
+                    <td class="actions-cell">
+                        <button class="icon-btn" onclick="editTransaction(${t.id})">✎</button>
+                        <button class="icon-btn" onclick="deleteTransactionHandler(${t.id})">✕</button>
+                    </td>
+                </tr>
+            `;
         }
+
         card.innerHTML = `
             <div class="card-inside">
                 <h3>${date}</h3>
-                ${rowsHtml}
+                <table class="expense-table">
+                    <thead>
+                        <tr>
+                            <th>Описание</th>
+                            <th>Кол-во</th>
+                            <th>Цена</th>
+                            <th>Сумма</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+                <div class="day-total">Итого за день: ${dayTotal} ₽</div>
             </div>
         `;
         container.appendChild(card);
     }
 }
-
 function groupByDate(transactions) {
     const grouped = {};
     for (const t of transactions) {

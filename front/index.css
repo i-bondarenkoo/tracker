@@ -33,60 +33,112 @@
     background-color: #8cceb5;
     border-radius: 25px;
     width: 85%;
-    margin: auto;
+    margin: 25px auto 0 auto;
     padding: 20px;
-    margin-top: 25px;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
+    align-items: start;
 }
-.day-card {
-    background: #79b89f;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    min-width: 240px;
-    max-width: 300px;
-    padding: 15px;
-    border-radius: 25px;
-    box-sizing: border-box;
+.expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.expense-table th {
+    text-align: center;
+    padding: 6px 4px;
+    font-size: 12px;
+    color: #2c2c2c;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.expense-table th:last-child {
+    border-right: none;
+}
+
+.expense-table td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+    color: #2c2c2c;
+}
+
+.expense-table th:first-child,
+.expense-table td:first-child {
+    width: 25%;
+    overflow-wrap: break-word;
+    word-break: break-all;
+}
+
+.expense-table th:nth-child(2),
+.expense-table td:nth-child(2) {
+    width: 16%;
+    white-space: nowrap;
+}
+
+.expense-table th:nth-child(3),
+.expense-table td:nth-child(3) {
+    width: 20%;
+    white-space: nowrap;
+}
+
+.expense-table th:nth-child(4),
+.expense-table td:nth-child(4) {
+    width: 20%;
+    white-space: nowrap;
+}
+
+.expense-table th:last-child,
+.expense-table td:last-child {
+    width: 19%;
 }
 .card-inside h3 {
     text-align: center;
     color: #2c2c2c;
-    margin: 0 0 12px 0;
-}
-.expense-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    margin: 0 0 8px 0;
 }
 
-.expense-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    background: white;
-    border-radius: 15px;
-    padding: 10px 14px;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.expense-row:last-child {
-    margin-bottom: 0;
-}
-
-.expense-row span:first-child {
-    flex: 1;
-    min-width: 0;
-    overflow-wrap: break-word;
+.day-total {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    text-align: right;
     color: #2c2c2c;
 }
+.actions-cell {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    align-items: center;
+}
 
-.expense-row span:last-child {
-    white-space: nowrap;
+.day-card {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 340px;
+    margin: 0 auto;
+    padding: 15px;
+    border-radius: 25px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+.day-total {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
     font-weight: bold;
-    color: #4a4a4a;
+    text-align: right;
 }
 .controls-panel {
     width: 85%;
