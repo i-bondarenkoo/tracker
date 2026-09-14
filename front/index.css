@@ -56,6 +56,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    box-sizing: border-box;
 }
 
 .expense-table th:last-child {
@@ -70,36 +71,37 @@
     text-align: center;
     vertical-align: middle;
     color: #2c2c2c;
+    box-sizing: border-box;
 }
 
 .expense-table th:first-child,
 .expense-table td:first-child {
-    width: 25%;
+    width: 20%;
     overflow-wrap: break-word;
-    word-break: break-all;
+    hyphens: auto;
 }
 
 .expense-table th:nth-child(2),
 .expense-table td:nth-child(2) {
-    width: 16%;
+    width: 20%;
     white-space: nowrap;
 }
 
 .expense-table th:nth-child(3),
 .expense-table td:nth-child(3) {
-    width: 20%;
+    width: 15%;
     white-space: nowrap;
 }
 
 .expense-table th:nth-child(4),
 .expense-table td:nth-child(4) {
-    width: 20%;
+    width: 15%;
     white-space: nowrap;
 }
 
 .expense-table th:last-child,
 .expense-table td:last-child {
-    width: 19%;
+    width: 20%;
 }
 .card-inside h3 {
     text-align: center;
@@ -115,10 +117,13 @@
     text-align: right;
     color: #2c2c2c;
 }
+.expense-table td.actions-td {
+    vertical-align: middle;
+}
 .actions-cell {
     display: flex;
     gap: 4px;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -126,7 +131,7 @@
     background: white;
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    width: 340px;
+    width: 390px;
     margin: 0 auto;
     padding: 15px;
     border-radius: 25px;
@@ -201,7 +206,7 @@
     align-self: center;
     background: #f0f0f0;
 }
-.login-modal, .register-modal , .transaction-modal, .date-range-filter-modal, .category-modal{
+.login-modal, .register-modal , .transaction-modal, .date-range-filter-modal, .category-modal, .transaction-modal-edit{
     display: none;
     position: fixed;
     top: 0;
@@ -215,7 +220,7 @@
 }
 
 .login-modal-content, .register-modal-content, .transaction-modal-content,
-.category-modal-content, .filter-range-content {
+.category-modal-content, .filter-range-content , .transaction-modal-content-edit{
     background: white;
     padding: 35px;
     border-radius: 28px;
@@ -227,7 +232,7 @@
 }
 
 .login-modal-content h3, .register-modal-content h3, .transaction-modal-content h3,
-.category-modal-content h3, .filter-modal-content h3 ,.filter-range-content h3{
+.category-modal-content h3, .filter-modal-content h3 ,.filter-range-content h3, .transaction-modal-content-edit h3{
     margin: 0 0 8px 0;
     text-align: center;
     color: #2c2c2c;
@@ -235,7 +240,7 @@
 
 .login-modal-content input, .register-modal-content input, .transaction-modal-content input,
 .category-modal-content input, .filter-modal-content input,
-.transaction-modal-content select ,.filter-range-content input{
+.transaction-modal-content select ,.filter-range-content input, .transaction-modal-content-edit input{
     padding: 13px;
     border-radius: 14px;
     border: 1px solid #ddd;
@@ -246,7 +251,7 @@
 
 .login-modal-content input:focus, .register-modal-content input:focus,
 .transaction-modal-content input:focus, .category-modal-content input:focus,
-.filter-modal-content input:focus .filter-range-content input:focus{
+.filter-modal-content input:focus .filter-range-content input:focus, .transaction-modal-content-edit input:focus{
     border-color: #8cceb5;
 }
 

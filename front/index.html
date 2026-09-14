@@ -72,25 +72,25 @@
         </div>
     </div>
     <div class="body-main" id="transactionsContainer">
-    <!-- <div class="day-card">
-        <div class="card-inside">
-            <h3>5 сентября</h3>
-            <div class="expense-row">
-                <span>Еда</span>
-                <span>450 ₽</span>
-                <div class="expense-actions">
-                    <button class="icon-btn">✎</button>
-                    <button class="icon-btn">✕</button>
-                </div>
-            </div>
+
+    </div>
+    <div class="transaction-modal-edit" id="transactionModalEdit">
+        <div class="transaction-modal-content-edit">
+            <h3>Редактирование данных</h3>
+            <input type="number" id="transaction-amount-edit" placeholder="Количество">
+            <input type="number" id="transaction-cost-edit" placeholder="Цена">
+
+            <input type="text" id="transaction-description-edit" placeholder="Описание">
+            <input type="date" id="transaction-transaction-date-edit" placeholder="Дата затраты">
+            <button class="submit-btn" id="transactionSubmitEdit">Изменить</button>
+            <button class="close-btn" id="transactionCloseEdit">Закрыть</button>
         </div>
-    </div> -->
-
-</div>
-
+    </div>
     <link rel="stylesheet" href="/front/index.css">
     <script src="/front/api.js"></script>
     <script src="/front/auth.js"></script>
-    <script src="/front/script.js"></script>
+    <script src="/front/modals.js"></script>
+    <script src="/front/categories.js"></script>
+    <script src="/front/transactions.js"></script>
 </body>
 </html>
