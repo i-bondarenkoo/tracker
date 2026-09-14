@@ -39,3 +39,10 @@ document.getElementById('transactionClose').addEventListener('click', ()=> {
 document.getElementById('transactionCloseEdit').addEventListener('click', () => {
     document.getElementById('transactionModalEdit').style.display = 'none';
 });
+
+document.querySelector('.stats-btn').addEventListener('click', () => {
+    document.getElementById('statsModal').style.display = 'flex';
+});
+document.getElementById('statsClose').addEventListener('click', ()=> {
+    document.getElementById('statsModal').style.display = 'none';
+});

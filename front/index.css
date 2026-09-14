@@ -171,7 +171,7 @@
     cursor: pointer;
     font-size: 15px;
 }
-.filter-date-btn {
+.stats-btn, .filter-date-btn {
     padding: 12px 20px;
     border: none;
     border-radius: 15px;
@@ -206,7 +206,7 @@
     align-self: center;
     background: #f0f0f0;
 }
-.login-modal, .register-modal , .transaction-modal, .date-range-filter-modal, .category-modal, .transaction-modal-edit{
+.login-modal, .register-modal , .transaction-modal, .date-range-filter-modal, .category-modal, .transaction-modal-edit, .stats-modal{
     display: none;
     position: fixed;
     top: 0;
@@ -220,7 +220,7 @@
 }
 
 .login-modal-content, .register-modal-content, .transaction-modal-content,
-.category-modal-content, .filter-range-content , .transaction-modal-content-edit{
+.category-modal-content, .filter-range-content , .transaction-modal-content-edit, .stats-modal-content{
     background: white;
     padding: 35px;
     border-radius: 28px;
@@ -232,7 +232,7 @@
 }
 
 .login-modal-content h3, .register-modal-content h3, .transaction-modal-content h3,
-.category-modal-content h3, .filter-modal-content h3 ,.filter-range-content h3, .transaction-modal-content-edit h3{
+.category-modal-content h3, .filter-modal-content h3 ,.filter-range-content h3, .transaction-modal-content-edit h3, .stats-modal-content h3{
     margin: 0 0 8px 0;
     text-align: center;
     color: #2c2c2c;
@@ -240,7 +240,7 @@
 
 .login-modal-content input, .register-modal-content input, .transaction-modal-content input,
 .category-modal-content input, .filter-modal-content input,
-.transaction-modal-content select ,.filter-range-content input, .transaction-modal-content-edit input{
+.transaction-modal-content select ,.filter-range-content input, .transaction-modal-content-edit input, .stats-modal-content input{
     padding: 13px;
     border-radius: 14px;
     border: 1px solid #ddd;
@@ -251,7 +251,7 @@
 
 .login-modal-content input:focus, .register-modal-content input:focus,
 .transaction-modal-content input:focus, .category-modal-content input:focus,
-.filter-modal-content input:focus .filter-range-content input:focus, .transaction-modal-content-edit input:focus{
+.filter-modal-content input:focus .filter-range-content input:focus, .transaction-modal-content-edit input:focus, .stats-modal-content input:focus{
     border-color: #8cceb5;
 }
 

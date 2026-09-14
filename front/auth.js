@@ -6,6 +6,7 @@ document.getElementById('loginSubmit').addEventListener('click', async () => {
         const data = await loginRequest(email, password);
         localStorage.setItem('token', data.access_token);
         document.getElementById('loginModal').style.display = 'none';
+        await loadCategoriesIntoSelect();
         loadAndRenderTransactions();
         alert('Вход выполнен!');
     } catch (err) {

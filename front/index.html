@@ -38,6 +38,7 @@
         <button class="add-transaction-btn">+ Добавить трату</button>
         <button class="add-category-btn">+ Добавить категорию</button>
         <button class="filter-date-btn">Фильтр по дате</button>
+        <button class="stats-btn">📊 Статистика</button>
     <div class="date-range-filter-modal" id="filter-rangeModal">
         <div class="filter-range-content">
             <h3>Выбери промежуток дат</h3>
@@ -55,7 +56,17 @@
             <button class="close-btn" id="categoryClose">Закрыть</button>
         </div>
     </div>
-    
+    <div class="stats-modal" id="statsModal">
+        <div class="stats-modal-content">
+            <h3>Статистика за период</h3>
+            <input type="date" id="stats-date-from">
+            <input type="date" id="stats-date-to">
+            <button class="submit-btn" id="statsSubmit">Показать</button>
+            <button class="close-btn" id="statsClose">Закрыть</button>
+
+            <div id="statsResults"></div>
+        </div>
+    </div>
     </div>
     <div class="transaction-modal" id="transactionModal">
         <div class="transaction-modal-content">
@@ -92,5 +103,6 @@
     <script src="/front/modals.js"></script>
     <script src="/front/categories.js"></script>
     <script src="/front/transactions.js"></script>
+    <script src="/front/stats.js"></script>
 </body>
 </html>

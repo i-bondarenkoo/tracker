@@ -3,6 +3,7 @@ let currentTransactions = [];
 async function loadAndRenderTransactions() {
     const token = localStorage.getItem('token');
     if (!token) return;
+    await loadCategoriesIntoSelect();
     let transactions;
     try {
         transactions = await getTransactions(token);
