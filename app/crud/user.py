@@ -1,10 +1,10 @@
 from pydantic import EmailStr
 
 from app.crud.helper import (
+    build_response_percentage_user_transactions,
     build_response_user,
     build_response_user_cost,
 )
-from app.schemas import user
 from app.schemas.user import CreateUser, UpdateUserPatch, UpdateUserFull
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
@@ -16,6 +16,7 @@ from sqlalchemy import func
 from app.models.transaction import Transaction
 from app.models.category import Category
 from app.auth.service import hash_password
+from app.crud import category
 
 
 async def create_user_crud(user_data: CreateUser, session: AsyncSession):
@@ -218,3 +219,49 @@ async def get_transactions_average_value_crud(
     total = result.scalars().all()
     print(total)
     return total
+
+
+# Посчитать процент трат по каждой категории от общей суммы
+# за определенный период времени
+async def get_part_transactions_from_total_amount_crud(
+    session: AsyncSession,
+    user_db: User,
+    date_from: date | None = None,
+    date_to: date | None = None,
+):
+    filter_date: list = [Transaction.user_id == user_db.id]
+    if date_from is not None and date_to is not None:
+        filter_date.append(Transaction.transaction_date.between(date_from, date_to))
+    elif date_from is not None:
+        filter_date.append(Transaction.transaction_date >= date_from)
+    elif date_to is not None:
+        filter_date.append(Transaction.transaction_date <= date_to)
+    query = await session.execute(
+        (
+            select(
+                Transaction.category_id,
+                func.sum(Transaction.cost * Transaction.amount).label(
+                    "user_sum_by_category"
+                ),
+            )
+            .filter(*filter_date)
+            .group_by(Transaction.category_id)
+        )
+    )
+    query_2 = await session.execute(
+        select(func.sum(Transaction.amount * Transaction.cost)).filter(*filter_date)
+    )
+    sum_by_category: list[tuple] = query.all()
+    print("sum_by_category", sum_by_category)
+    total_sum = query_2.scalars().one_or_none()
+    if total_sum is None:
+        return None
+    print("total_sum", total_sum)
+    result = []
+    for e in sum_by_category:
+        digit = round(e[1] * 100 / total_sum, 2)
+        current_category = await category.get_category_by_id_crud(
+            session=session, category_id=e[0]
+        )
+        result.append((current_category.name, digit))
+    return build_response_percentage_user_transactions(data_in=result)

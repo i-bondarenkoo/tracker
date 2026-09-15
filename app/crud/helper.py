@@ -2,7 +2,12 @@ from app.models.transaction import Transaction
 
 from app.models.category import Category
 from app.models.user import User
-from app.schemas.user import ResponseUserCost, ResponseUserExtended, ResponseUserTopCost
+from app.schemas.user import (
+    ResponseUserCost,
+    ResponseCategoryPercentage,
+    ResponseUserExtended,
+    ResponseUserTopCost,
+)
 from app.schemas.category import ResponseCategoryExtended
 
 
@@ -54,3 +59,14 @@ def build_response_top_user_cost(data_in: list):
         )
         result.append(conver_data)
     return result
+
+
+def build_response_percentage_user_transactions(data_in: list[tuple]):
+    response = []
+    for e in data_in:
+        convert_data = ResponseCategoryPercentage(
+            сategory_name=e[0],
+            percentage=e[1],
+        )
+        response.append(convert_data)
+    return response

@@ -12,6 +12,11 @@ class UserLogin(BaseModel):
     password: str
 
 
+class ResponseCategoryPercentage(BaseModel):
+    сategory_name: str
+    percentage: float
+
+
 class CreateUser(BaseModel):
     email: EmailStr
     first_name: str

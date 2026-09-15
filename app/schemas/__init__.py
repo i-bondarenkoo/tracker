@@ -9,6 +9,7 @@ from app.schemas.user import (
     ResponseUserCost,
     UserLogin,
     ResponseUserAvgValue,
+    ResponseCategoryPercentage,
 )
 from app.schemas.category import (
     CreateCategory,
