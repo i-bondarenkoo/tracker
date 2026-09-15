@@ -223,7 +223,7 @@ async def get_transactions_average_value_crud(
 
 # Посчитать процент трат по каждой категории от общей суммы
 # за определенный период времени
-async def get_part_transactions_from_total_amount_crud(
+async def get_precentage_from_total_amount_crud(
     session: AsyncSession,
     user_db: User,
     date_from: date | None = None,

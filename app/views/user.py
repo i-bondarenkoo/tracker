@@ -141,16 +141,16 @@ async def get_speding_by_category(
 
 
 @router.get(
-    "/me/part-transactions-from-total-amount",
+    "/me/precentage-from-total-amount",
     response_model=list[ResponseCategoryPercentage],
 )
-async def get_part_transactions_from_total_amount(
+async def get_precentage_from_total_amount(
     user_db: User = Depends(get_current_user),
     session: AsyncSession = Depends(db_helper.get_session),
     date_from: date = Query(),
     date_to: date = Query(),
 ):
-    response = await user.get_part_transactions_from_total_amount_crud(
+    response = await user.get_precentage_from_total_amount_crud(
         user_db=user_db,
         session=session,
         date_to=date_to,
