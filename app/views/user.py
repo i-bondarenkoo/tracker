@@ -12,6 +12,7 @@ from app.schemas.user import (
     ResponseUserTopCost,
     ResponseUserAvgValue,
     ResponseCategoryPercentage,
+    ResponseComparisonTransactionByMonth,
 )
 from app.crud import user
 from app.exc.error import DateError
@@ -19,6 +20,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import date
 from app.auth.dependencies import get_current_user
 from app.models.user import User
+from datetime import date
 
 router = APIRouter(
     prefix="/users",
@@ -156,6 +158,41 @@ async def get_precentage_from_total_amount(
         date_to=date_to,
         date_from=date_from,
     )
+    if response is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="У пользователя нет затрат"
+        )
+    return response
+
+
+@router.get(
+    "/me/comparison-by-month",
+    response_model=list[ResponseComparisonTransactionByMonth],
+)
+async def get_comparison_by_month(
+    user_db: User = Depends(get_current_user),
+    session: AsyncSession = Depends(db_helper.get_session),
+    previous_month: date = Query(),
+    current_month: date = Query(),
+):
+    current_date = date.today()
+    if previous_month > current_date or current_month > current_date:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Временные промежутки указаны не корректно",
+        )
+    try:
+        response = await user.get_comparison_by_month_crud(
+            user_db=user_db,
+            session=session,
+            previous_month=previous_month,
+            current_month=current_month,
+        )
+    except DateError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Временные промежутки указаны не корректно",
+        )
     return response
 
 

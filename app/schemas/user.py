@@ -17,6 +17,15 @@ class ResponseCategoryPercentage(BaseModel):
     percentage: float
 
 
+class ResponseComparisonTransactionByMonth(BaseModel):
+    category_name: str
+    sum_prev: float
+    sum_curr: float
+    percentage: float | None = None
+    status: str | None = None
+    model_config = ConfigDict(from_attributes=True)
+
+
 class CreateUser(BaseModel):
     email: EmailStr
     first_name: str

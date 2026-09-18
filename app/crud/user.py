@@ -1,11 +1,19 @@
 from pydantic import EmailStr
-
+import asyncio
 from app.crud.helper import (
     build_response_percentage_user_transactions,
     build_response_user,
     build_response_user_cost,
+    build_response_comparison,
+    calculate_percentage_difference_by_month,
+    get_date_helper,
 )
-from app.schemas.user import CreateUser, UpdateUserPatch, UpdateUserFull
+from app.schemas.user import (
+    CreateUser,
+    UpdateUserPatch,
+    UpdateUserFull,
+    ResponseComparisonTransactionByMonth,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from sqlalchemy import select, Result
@@ -17,6 +25,7 @@ from app.models.transaction import Transaction
 from app.models.category import Category
 from app.auth.service import hash_password
 from app.crud import category
+import calendar
 
 
 async def create_user_crud(user_data: CreateUser, session: AsyncSession):
@@ -265,3 +274,68 @@ async def get_precentage_from_total_amount_crud(
         )
         result.append((current_category.name, digit))
     return build_response_percentage_user_transactions(data_in=result)
+
+
+# Сравнить траты пользователя по месяцам
+# Для каждой категории показать сумму в этом месяце и в том, который он выберет
+# и вывести разницу в процентах
+async def get_comparison_by_month_crud(
+    user_db: User,
+    session: AsyncSession,
+    previous_month: date,
+    current_month: date,
+):
+    if previous_month > current_month:
+        raise DateError
+    all_date: dict = get_date_helper(
+        prev_month=previous_month, curr_month=current_month
+    )
+    query_prev_month = (
+        select(
+            Transaction.category_id,
+            func.sum(Transaction.cost * Transaction.amount),
+        )
+        .filter(
+            Transaction.user_id == user_db.id,
+            Transaction.transaction_date.between(
+                all_date["start_prev_month"], all_date["end_prev_month"]
+            ),
+        )
+        .group_by(Transaction.category_id)
+    )
+    query_curr_month = (
+        select(
+            Transaction.category_id,
+            func.sum(Transaction.cost * Transaction.amount),
+        )
+        .filter(
+            Transaction.user_id == user_db.id,
+            Transaction.transaction_date.between(
+                all_date["start_curr_month"], all_date["end_curr_month"]
+            ),
+        )
+        .group_by(Transaction.category_id)
+    )
+    query_curr_month, query_prev_month = await asyncio.gather(
+        session.execute(query_prev_month),
+        session.execute(query_curr_month),
+    )
+    prev_month_data: list[tuple] = query_prev_month.all()
+    curr_month_data: list[tuple] = query_curr_month.all()
+
+    result: list[dict] = calculate_percentage_difference_by_month(
+        prev_month_data=prev_month_data,
+        curr_month_data=curr_month_data,
+    )
+    category_ids = [item["category_id"] for item in result]
+    query_categories = await session.execute(
+        select(Category).filter(Category.id.in_(category_ids))
+    )
+    categories = query_categories.scalars().all()
+    category_names = {cat.id: cat.name for cat in categories}
+    for item in result:
+        item["category_name"] = category_names.get(
+            item["category_id"], "Неизвестная категория"
+        )
+        del item["category_id"]
+    return build_response_comparison(result)
