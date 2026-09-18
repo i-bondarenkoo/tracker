@@ -317,8 +317,8 @@ async def get_comparison_by_month_crud(
         .group_by(Transaction.category_id)
     )
     query_curr_month, query_prev_month = await asyncio.gather(
-        session.execute(query_prev_month),
         session.execute(query_curr_month),
+        session.execute(query_prev_month),
     )
     prev_month_data: list[tuple] = query_prev_month.all()
     curr_month_data: list[tuple] = query_curr_month.all()
