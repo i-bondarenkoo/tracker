@@ -12,7 +12,6 @@ from app.schemas.user import (
     CreateUser,
     UpdateUserPatch,
     UpdateUserFull,
-    ResponseComparisonTransactionByMonth,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
@@ -25,7 +24,6 @@ from app.models.transaction import Transaction
 from app.models.category import Category
 from app.auth.service import hash_password
 from app.crud import category
-import calendar
 
 
 async def create_user_crud(user_data: CreateUser, session: AsyncSession):
@@ -316,12 +314,12 @@ async def get_comparison_by_month_crud(
         )
         .group_by(Transaction.category_id)
     )
-    query_curr_month, query_prev_month = await asyncio.gather(
+    curr_result, prev_result = await asyncio.gather(
         session.execute(query_curr_month),
         session.execute(query_prev_month),
     )
-    prev_month_data: list[tuple] = query_prev_month.all()
-    curr_month_data: list[tuple] = query_curr_month.all()
+    prev_month_data: list[tuple] = prev_result.all()
+    curr_month_data: list[tuple] = curr_result.all()
 
     result: list[dict] = calculate_percentage_difference_by_month(
         prev_month_data=prev_month_data,
