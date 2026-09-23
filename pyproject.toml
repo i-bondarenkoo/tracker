@@ -5,7 +5,7 @@ description = ""
 authors = [
     {name = "Igor Bondarenko",email = "bondarenko200021@mail.ru"}
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4"
 dependencies = [
     "pydantic[email] (>=2.13.4,<3.0.0)",
     "pydantic-settings (>=2.15.0,<3.0.0)",
@@ -16,7 +16,10 @@ dependencies = [
     "alembic (>=1.19.1,<2.0.0)",
     "bcrypt (>=5.0.0,<6.0.0)",
     "pyjwt (>=2.13.0,<3.0.0)",
-    "python-multipart (>=0.0.32,<0.0.33)"
+    "python-multipart (>=0.0.32,<0.0.33)",
+    "python-dotenv (>=1.2.3,<2.0.0)",
+    "langgraph (>=1.2.12,<2.0.0)",
+    "langchain-gigachat (>=0.5.1,<0.6.0)"
 ]
 
 
