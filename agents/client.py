@@ -1,8 +1,7 @@
 import os
 from dotenv import load_dotenv
 from langchain_gigachat import GigaChat
-from langchain.agents import create_agent
-from agents.tools import tools
+from datetime import date
 
 load_dotenv()
 credentials = os.getenv("GIGACHAT_CREDENTIALS")
@@ -16,30 +15,22 @@ llm_model = GigaChat(
     verify_ssl_certs=False,
 )
 
-system_prompt = """
-Ты помощник приложения для учёта расходов.
+system_prompt = f""" 
+Ты помощник приложения для учёта расходов. 
 
-Если пользователь спрашивает свой ID,
-используй инструмент get_my_id.
+Сегодня {date.today()}. Если пользователь говорит "сегодня", "в этом месяце" и тд.
+Опирайся на эту дату.
 
-После получения результата сообщи пользователю его ID.
+Ты можешь получать статистику расходов пользователя по категориям. 
+Если пользователь спрашивает о своих расходах: 
+
+1. Определи начальную и конечную дату периода. 
+2. Если пользователь указал количество категорий — используй его. 
+3. Если количество не указано — используй 3. 
+4. Используй подходящий инструмент для получения данных. 
+5. После получения данных понятно объясни пользователю результат. 
+Работай только с данными которые присылает API и корректно обрабатывай входные данные
+Больше ничего не придумывай.
+Еще ты можешь получать список транзакций пользователя, отсортированный по возрастанию
+Соответствующая функция есть в твоих инструментах
 """
-
-agent = create_agent(
-    llm_model,
-    tools=tools,
-    system_prompt=system_prompt,
-)
-
-response = agent.invoke(
-    {
-        "messages": [
-            {
-                "role": "user",
-                "content": "Какой у меня ID?",
-            }
-        ]
-    }
-)
-# response = llm_model.invoke("Назови 3 любых фрукта")
-print(response["messages"][-1].content)
