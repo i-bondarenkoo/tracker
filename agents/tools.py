@@ -42,8 +42,8 @@ def create_tools(
 
     @tool
     async def get_list_transactions_tools(
-        date_from: date,
-        date_to: date,
+        date_from: date | None = None,
+        date_to: date | None = None,
         limit: int = 3,
         order: str = "asc",
     ):
