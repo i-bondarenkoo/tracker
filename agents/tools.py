@@ -1,5 +1,5 @@
 from langchain.tools import tool
-from app.crud.user import get_top_spending_by_category_crud
+from app.crud.user import get_top_spending_by_category_crud, get_total_sum_by_day_crud
 from datetime import date
 from app.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,6 +28,7 @@ def create_tools(
             limit: Максимальное количество категорий в результате.
         """
         print("TOOL ВЫЗВАН, функция считающая топ трат с группировкой по категориям")
+        # print("Вызвана", get_top_spending_by_category_tools.__name__)
         # print(date_from, date_to, limit)
         # print(user_db.id)
         result = await get_top_spending_by_category_crud(
@@ -72,7 +73,7 @@ def create_tools(
 
         """
 
-        print("2 функция для вывода транзакиций")
+        print("Выводим список транзакций!!")
         # print("date_from", date_from)
         # print("date_to", date_to)
 
@@ -105,4 +106,32 @@ def create_tools(
             )
         return response
 
-    return [get_list_transactions_tools, get_top_spending_by_category_tools]
+    @tool
+    async def get_total_sum_by_day_tools(
+        date_from: date,
+        date_to: date,
+    ):
+        """
+        Функция возвращает общую сумму затрат пользователя с группировкой по дням.
+        Ответ приходит в виде списка кортежей. Где на первой позиции значение суммы -
+        используй его для вывода общих затрат за день. И 2 значение это дата, в формате 2025-07-04 (гг-мм-дд)
+        Args:
+            date_from : Начальная дата периода
+            date_to: Конечная дата периода
+        """
+
+        print("Считаем и выводим суммы по дням")
+        total_days_sum: list[tuple] = await get_total_sum_by_day_crud(
+            session=session,
+            user_db=user_db,
+            date_from=date_from,
+            date_to=date_to,
+        )
+        print(total_days_sum)
+        return total_days_sum
+
+    return [
+        get_list_transactions_tools,
+        get_top_spending_by_category_tools,
+        get_total_sum_by_day_tools,
+    ]

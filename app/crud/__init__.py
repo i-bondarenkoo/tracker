@@ -10,6 +10,7 @@ from app.crud.user import (
     get_top_spending_by_category_crud,
     get_transactions_average_value_crud,
     get_precentage_from_total_amount_crud,
+    get_total_sum_by_day_crud,
 )
 
 from app.crud.category import (

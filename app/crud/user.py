@@ -337,3 +337,25 @@ async def get_comparison_by_month_crud(
         )
         del item["category_id"]
     return build_response_comparison(result)
+
+
+async def get_total_sum_by_day_crud(
+    session: AsyncSession,
+    user_db: User,
+    date_from: date,
+    date_to: date,
+):
+    stmt = (
+        select(
+            func.sum(Transaction.amount * Transaction.cost).label("one_day_total_sum"),
+            Transaction.transaction_date.label("date"),
+        )
+        .filter(
+            Transaction.user_id == user_db.id,
+            Transaction.transaction_date.between(date_from, date_to),
+        )
+        .group_by(Transaction.transaction_date)
+    )
+    result = await session.execute(stmt)
+    total_days_sum: list[tuple] = result.all()
+    return total_days_sum
