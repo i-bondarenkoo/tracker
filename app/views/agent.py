@@ -35,4 +35,5 @@ async def chat(
             ]
         }
     )
+    # print(response)
     return {"message": response["messages"][-1].content}

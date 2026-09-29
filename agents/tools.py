@@ -27,7 +27,7 @@ def create_tools(
             date_to: Конечная дата периода.
             limit: Максимальное количество категорий в результате.
         """
-        # print("TOOL ВЫЗВАН")
+        print("TOOL ВЫЗВАН, функция считающая топ трат с группировкой по категориям")
         # print(date_from, date_to, limit)
         # print(user_db.id)
         result = await get_top_spending_by_category_crud(
@@ -49,7 +49,15 @@ def create_tools(
     ):
         """
         Возвращает список транзакций(трат) пользователя.
-        Сортировка по возрастанию - asc
+
+        amount — количество купленных единиц.
+        cost — цена одной единицы.
+        total_cost — итоговая стоимость всей транзакции: amount * cost.
+
+        При ответе пользователю для суммы конкретной траты всегда используй total_cost.
+        Никогда не используй cost как общую сумму покупки.
+        Не вычисляй total_cost самостоятельно, используй значение из результата инструмента.
+
         Args:
             date_to | None = None: Конечная дата периода .
             date_from | None = None: Начальная дата периода .
@@ -60,13 +68,13 @@ def create_tools(
             использую то, что по умолчанию
             order - тип сортировки, если пользователь просит "последние N затрат" то использовать
             order='desc', если просит "первые N трат" или не указывает ничего - order='asc'
+
+
         """
 
-        # print("2 функций для вывода транзакиций")
+        print("2 функция для вывода транзакиций")
         # print("date_from", date_from)
         # print("date_to", date_to)
-        # print("start", start)
-        # print("stop", stop)
 
         transactions: list[ResponseTransaction] = await get_list_transactions_crud(
             date_from=date_from,
@@ -92,6 +100,7 @@ def create_tools(
                     "description": transaction.description,
                     "transaction_date": transaction.transaction_date,
                     "category": categories_by_id[transaction.category_id],
+                    "total_cost": transaction.amount * transaction.cost,
                 }
             )
         return response
