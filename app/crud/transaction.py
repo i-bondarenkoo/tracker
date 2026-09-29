@@ -67,8 +67,8 @@ async def get_transaction_by_id_crud(
 async def get_list_transactions_crud(
     user_db: User,
     session: AsyncSession,
-    start: int = 0,
-    stop: int = 3,
+    limit: int = 3,
+    order: str = "asc",
     date_from: date | None = None,
     date_to: date | None = None,
 ):
@@ -79,13 +79,22 @@ async def get_list_transactions_crud(
         filters.append(Transaction.transaction_date >= date_from)
     elif date_to is not None:
         filters.append(Transaction.transaction_date <= date_to)
-    stmt = (
-        select(Transaction)
-        .filter(*filters)
-        .order_by(Transaction.transaction_date.asc())
-        .limit(stop - start)
-        .offset(start)
-    )
+    if order == "asc":
+        stmt = (
+            select(Transaction)
+            .filter(*filters)
+            .order_by(Transaction.transaction_date.asc())
+            .limit(limit)
+        )
+    elif order == "desc":
+        stmt = (
+            select(Transaction)
+            .filter(*filters)
+            .order_by(Transaction.transaction_date.desc())
+            .limit(limit)
+        )
+    else:
+        raise ValueError("order должен быть 'asc' или 'desc'")
     result = await session.execute(stmt)
     transactions: list = result.scalars().all()
     return transactions

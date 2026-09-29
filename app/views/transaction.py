@@ -86,25 +86,26 @@ async def get_transaction_by_id(
 @router.get("/", response_model=list[ResponseTransaction])
 async def get_list_transactions(
     user_db: User = Depends(get_current_user),
-    start: int = Query(0, ge=0),
-    stop: int = Query(3, gt=1),
+    limit: int = Query(3, ge=1, lt=200),
+    order: str = Query("asc"),
     session: AsyncSession = Depends(db_helper.get_session),
     date_from: date = Query(default=None),
     date_to: date = Query(default=None),
 ):
-    if start > stop:
+    try:
+        transactions: list = await transaction.get_list_transactions_crud(
+            order=order,
+            user_db=user_db,
+            date_from=date_from,
+            date_to=date_to,
+            limit=limit,
+            session=session,
+        )
+    except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Задан не корректный диапазон",
+            detail="Метод сортировки указан не верно. Параметр order должен быть asc или desc",
         )
-    transactions: list = await transaction.get_list_transactions_crud(
-        start=start,
-        user_db=user_db,
-        date_from=date_from,
-        date_to=date_to,
-        stop=stop,
-        session=session,
-    )
     return transactions
 
 

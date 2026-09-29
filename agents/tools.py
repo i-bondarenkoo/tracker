@@ -4,6 +4,8 @@ from datetime import date
 from app.models.user import User
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.crud.transaction import get_list_transactions_crud
+from app.schemas.transaction import ResponseTransaction
+from agents.services import get_all_category
 
 
 def create_tools(
@@ -11,7 +13,7 @@ def create_tools(
     session: AsyncSession,
 ):
     @tool
-    async def get_top_spending_by_category(
+    async def get_top_spending_by_category_tools(
         date_from: date,
         date_to: date,
         limit: int = 3,
@@ -39,11 +41,11 @@ def create_tools(
         return result
 
     @tool
-    async def get_list_transactions(
+    async def get_list_transactions_tools(
         date_from: date,
         date_to: date,
-        start: int = 0,
-        stop: int = 3,
+        limit: int = 3,
+        order: str = "asc",
     ):
         """
         Возвращает список транзакций(трат) пользователя.
@@ -51,27 +53,47 @@ def create_tools(
         Args:
             date_to | None = None: Конечная дата периода .
             date_from | None = None: Начальная дата периода .
-            Эти даты могут быть не указаны, и тогда рассматриваем все транзакции за все время,
+            Эти даты могут быть не указаны, и тогда рассматриваем все транзакции
+            за все время,
             либо может быть указана одна из границ диапазона
-            start | None = None : Начальный сдвиг в таблице
-            stop | None = None : Конечный сдвиг (эта граница не учитывается)
-            Пример start=3, stop=5 -> пропустить первые 3 строки, взять следующие 2
+            limit - количество затрат в ответе. Если пользователь не указывает значение,
+            использую то, что по умолчанию
+            order - тип сортировки, если пользователь просит "последние N затрат" то использовать
+            order='desc', если просит "первые N трат" или не указывает ничего - order='asc'
         """
 
-        print("2 функций для вывода транзакиций")
-        print("date_from", date_from)
-        print("date_to", date_to)
-        print("start", start)
-        print("stop", stop)
-        result = await get_list_transactions_crud(
+        # print("2 функций для вывода транзакиций")
+        # print("date_from", date_from)
+        # print("date_to", date_to)
+        # print("start", start)
+        # print("stop", stop)
+
+        transactions: list[ResponseTransaction] = await get_list_transactions_crud(
             date_from=date_from,
             date_to=date_to,
             session=session,
-            start=start,
-            stop=stop,
+            limit=limit,
+            order=order,
             user_db=user_db,
         )
-        print("Resultat", result)
-        return result
+        # print("Resultat", result)
+        response = []
+        category_ids: list[int] = [
+            transaction.category_id for transaction in transactions
+        ]
+        categories = await get_all_category(category_ids=category_ids, session=session)
+        categories_by_id: dict = {category.id: category.name for category in categories}
+        for transaction in transactions:
+            response.append(
+                {
+                    "id": transaction.id,
+                    "amount": transaction.amount,
+                    "cost": transaction.cost,
+                    "description": transaction.description,
+                    "transaction_date": transaction.transaction_date,
+                    "category": categories_by_id[transaction.category_id],
+                }
+            )
+        return response
 
-    return [get_top_spending_by_category, get_list_transactions]
+    return [get_list_transactions_tools, get_top_spending_by_category_tools]

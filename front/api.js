@@ -28,7 +28,7 @@ async function registerRequest(userData) {
 }
 
 async function getTransactions(token) {
-    const response = await fetch(`${API_URL}/transaction/?start=0&stop=1000`, {
+    const response = await fetch(`${API_URL}/transaction/?limit=100&order=asc`, {
         headers: {'Authorization': `Bearer ${token}`},
 
     });
