@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends
-from langchain.agents import create_agent
-from agents.tools import create_tools
+
 from app.db.db_helper import db_helper
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.auth.dependencies import get_current_user
-from agents.client import llm_model, system_prompt
+
+from langgraph.checkpoint.memory import InMemorySaver
+from agents.schemas import AgentContext
+from agents.client import agent
 
 router = APIRouter(tags=["AgentAI"])
 
@@ -16,15 +18,7 @@ async def chat(
     session: AsyncSession = Depends(db_helper.get_session),
     user_db: User = Depends(get_current_user),
 ):
-    tools = create_tools(
-        user_db=user_db,
-        session=session,
-    )
-    agent = create_agent(
-        llm_model,
-        tools=tools,
-        system_prompt=system_prompt,
-    )
+    request_context = AgentContext(user_db=user_db, session=session)
     response = await agent.ainvoke(
         {
             "messages": [
@@ -33,7 +27,8 @@ async def chat(
                     "content": message,
                 }
             ]
-        }
+        },
+        context=request_context,
     )
     # print(response)
     return {"message": response["messages"][-1].content}
