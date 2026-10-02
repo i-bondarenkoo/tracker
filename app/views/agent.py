@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.auth.dependencies import get_current_user
 
-from langgraph.checkpoint.memory import InMemorySaver
+
 from agents.schemas import AgentContext
 from agents.client import agent
 
@@ -18,6 +18,8 @@ async def chat(
     session: AsyncSession = Depends(db_helper.get_session),
     user_db: User = Depends(get_current_user),
 ):
+    chat_number = str(user_db.id)
+    thread_config = {"configurable": {"thread_id": chat_number}}
     request_context = AgentContext(user_db=user_db, session=session)
     response = await agent.ainvoke(
         {
@@ -28,6 +30,7 @@ async def chat(
                 }
             ]
         },
+        thread_config,
         context=request_context,
     )
     # print(response)

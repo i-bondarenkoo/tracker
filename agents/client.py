@@ -5,6 +5,7 @@ from datetime import date
 from langchain.agents import create_agent
 from agents.schemas import AgentContext
 from agents.tools import list_tools
+from langgraph.checkpoint.memory import InMemorySaver
 
 load_dotenv()
 credentials = os.getenv("GIGACHAT_CREDENTIALS")
@@ -48,4 +49,5 @@ agent = create_agent(
     tools=list_tools,
     system_prompt=system_prompt,
     context_schema=AgentContext,
+    checkpointer=InMemorySaver(),
 )
