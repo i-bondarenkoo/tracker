@@ -2,10 +2,9 @@ import os
 from dotenv import load_dotenv
 from langchain_gigachat import GigaChat
 from datetime import date
-from langchain.agents import create_agent
-from agents.schemas import AgentContext
-from agents.tools import list_tools
-from langgraph.checkpoint.memory import InMemorySaver
+
+# from langgraph.checkpoint.memory import InMemorySaver
+# from langgraph.checkpoint.postgres import PostgresSaver
 
 load_dotenv()
 credentials = os.getenv("GIGACHAT_CREDENTIALS")
@@ -43,11 +42,3 @@ system_prompt = f"""
 Определи начальную и конечную дату периода из запроса пользователя. Работай только
 с теми данными которые вернет тебе инструмент. От себя ничего не придумывай
 """
-
-agent = create_agent(
-    llm_model,
-    tools=list_tools,
-    system_prompt=system_prompt,
-    context_schema=AgentContext,
-    checkpointer=InMemorySaver(),
-)

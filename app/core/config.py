@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     )
     jwt_auth: JWTAuth
     gigachat_credentials: str
+    checkpointer_db_url: str
 
 
 settings = Settings()
