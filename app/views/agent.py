@@ -1,18 +1,19 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Body
 
 from app.db.db_helper import db_helper
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.user import User
 from app.auth.dependencies import get_current_user
-
+from agents.schemas import ChatRequest
 from agents.schemas import AgentContext
+from typing import Annotated
 
 router = APIRouter(tags=["AgentAI"])
 
 
 @router.post("/chat")
 async def chat(
-    message: str,
+    message: Annotated[ChatRequest, Body()],
     request: Request,
     session: AsyncSession = Depends(db_helper.get_session),
     user_db: User = Depends(get_current_user),
