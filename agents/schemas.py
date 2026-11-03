@@ -9,7 +9,3 @@ from sqlalchemy.ext.asyncio import AsyncSession
 class AgentContext:
     user_db: User
     session: AsyncSession
-
-
-class ChatRequest(BaseModel):
-    message: str
